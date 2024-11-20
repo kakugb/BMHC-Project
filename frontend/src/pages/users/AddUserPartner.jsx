@@ -2,287 +2,405 @@ import React, { useState } from "react";
 import axios from "axios";
 
 function AddUserPartner() {
-  const [formData, setFormData] = useState({
-    name: "",
-    specialty: "",
-    zip_code: "",
-    contact_info: "",
-    email: "",
-    address: "",
-    partner_type: "",
-    availability: "",
-    status: "",
-  });
-
-  const [searchTerm, setSearchTerm] = useState(""); 
-  const [partners, setPartners] = useState([]); 
-  const [loading, setLoading] = useState(false);
+  const [partners, setPartners] = useState([]); // State to hold filtered partners
+  const [loading, setLoading] = useState(false); // Loading state for API call
   const [error, setError] = useState(null);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPartner, setSelectedPartner] = useState(null);
   
-  const handleSearch = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const token = localStorage.getItem("token"); 
-      if (!token) {
-        setError("No token found. Please log in.");
-        setLoading(false);
-        return;
-      }
+  const [formData, setFormData] = useState({
+  
+    "name": "",
+    "telephone": "",
+    "contact": "",
+    "address": "",
+    "gender": "",
+    "age_range": "",
+    "citizenship_status": "",
+    "insurance": "",
+    "zip_code": "",
+    "physical": "",
+    "mental": "",
+    "social_determinants_of_health": "",
+    "offers_transportation": "",
+    "emergency_room": "",
+  });
+  const [zipCodeInput, setZipCodeInput] = useState("");
+  const zipCodeOptions = [
+    "Downtown Austin - 78701",
+    "South Central Austin - 78704",
+    "Central Austin - 78703",
+    "Central Austin - 78705",
+    "Downtown Austin - 78701",
+"South Central Austin - 78704",
+"Central Austin - 78703",
+"Central Austin - 78705",
+"Central Austin - 78712",
+"Central Austin - 78751",
+"Central Austin - 78756",
+"Central Austin - 78757",
+"East Austin - 78702",
+"East Austin - 78722",
+"Southeast Austin - 78719",
+"Southeast Austin - 78741",
+"Southeast Austin - 78742",
+"Southeast Austin - 78744",
+"Southeast Austin - 78747",
+"South Austin - 78745",
+"South Austin - 78748",
+"Southwest Austin - 78735",
+"Southwest Austin - 78736",
+"Southwest Austin - 78737",
+"Southwest Austin - 78738",
+"Southwest Austin - 78739",
+"Southwest Austin - 78749",
+"Westlake Hills - 78733",
+"Westlake Hills - 78746",
+"Northwest Austin - 78726",
+"Northwest Austin - 78727",
+"Northwest Austin - 78728",
+"Northwest Austin - 78729",
+"Northwest Austin - 78730",
+"Northwest Austin - 78731",
+"Northwest Austin - 78750",
+"Northwest Austin - 78758",
+"Northwest Austin - 78759",
+"Lake Travis - 78732",
+"Lake Travis - 78734",
+"Northeast Austin - 78710",
+"Northeast Austin - 78721",
+"Northeast Austin - 78723",
+"Northeast Austin - 78724",
+"Northeast Austin - 78725",
+"Northeast Austin - 78752",
+"Northeast Austin - 78753",
+"Northeast Austin - 78754",
+"Buda - 78610",
+"Cedar Creek - 78612",
+"Cedar Park - 78613",
+"Coupland - 78615",
+"Del Valle - 78617",
+"Dripping Springs - 78620",
+"Elgin - 78621",
+"Hutto - 78634",
+"Leander - 78641",
+"Leander - 78645",
+"Liberty Hill - 78642",
+"Manchaca - 78652",
+"Manor - 78653",
+"Marble Falls - 78654",
+"Round Mountain - 78663",
+"Round Rock - 78664",
+"Spicewood - 78669"
+  ];
 
-      const response = await axios.post(
-        "http://localhost:5000/api/partners/filter", 
-        { name: searchTerm }, 
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, 
-          },
-        }
-      );
-      setPartners(response.data); 
-    } catch (err) {
-      setError("Error fetching partners. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const physicalServices = [
+    "Physical Care",
+    "Health Screenings", 
+    "MAP Enrollment", 
+    "Public Funded Health Insurance",
+  ];
+
+  const mentalServices = [
+    "Counseling", 
+    "Nutrition Education", 
+    "Psychiatric Assessments & Treatment", 
+    "Trauma & Post-Traumatic Stress", 
+    "Grief Assessments & Processing", 
+    "Therapeutic Services for Severe Mental Illnesses", 
+    "Counseling & Life Coaching Services", 
+    "Medication Management", 
+    "Substance Use Disorders", 
+    "Coping Skills Improvement",
+  ];
+
+  const socialServices = [
+   "Food", 
+        "Diversion", 
+        "Transportation", 
+        "Workforce (Career Skills)", 
+        "Training", 
+        "PSH Supportive Services", 
+        "Respite Medical Care Support", 
+        "Reentry Support Services"
+  ];
+  const handleChange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
   };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const token = localStorage.getItem("token"); 
-
-    if (!token) {
-      setError("No token found. Please log in.");
-      setLoading(false);
-      return;
-    }
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // Prevent default form submission behavior
+  
+    setLoading(true); // Set loading state to indicate ongoing request
+    console.log(formData);
+  
+    // Retrieve the token from localStorage or sessionStorage
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token'); 
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/partners/create", 
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, 
-          },
+      const response = await axios.post('http://localhost:5000/api/partners/create', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`  // Add token to the request headers
         }
-      );
-      alert("Partner added successfully!");
-      
+      });
+      console.log(response.data); // Log the response data for debugging
+  
+      // Handle successful response (e.g., clear form, fetch updated partner list)
       setFormData({
         name: "",
-        specialty: "",
-        zip_code: "",
-        contact_info: "",
-        email: "",
+        telephone: "",
+        contact: "",
         address: "",
-        partner_type: "",
-        availability: "",
-        status: "",
+        gender: "",
+        age_range: "",
+        citizenship_status: "",
+        insurance: "",
+        zip_code: "",
+        physical: "",
+        mental: "",
+        social_determinants_of_health: "",
+        offers_transportation: "",
+        emergency_room: "",
       });
-    } catch (err) {
-      setError("Error adding partner. Please try again.");
+  
+    } catch (error) {
+      console.error(error); // Log the error for debugging
+      setError(error.message || "Error creating partner"); // Set error message
     } finally {
-      setLoading(false);
+      setLoading(false); // Reset loading state regardless of success or failure
     }
-  };
+};
+
 
   return (
     <div className="min-h-screen p-6  text-black">
-      <div className="flex justify-end mb-6">
-        <div className="w-full max-w-sm min-w-[200px]">
-          <div className="relative">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-3 pr-28 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
-              placeholder="Search Partners by Name..."
-            />
-            <button
-              onClick={handleSearch}
-              className="absolute top-1 right-1 flex items-center rounded bg-slate-800 py-1 px-2.5 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-              type="button"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
-                <path fillRule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clipRule="evenodd" />
-              </svg>
-              Search
-            </button>
-          </div>
-        </div>
-      </div>
+   
 
      
       <div className="max-w-xl mx-auto p-6 bg-yellow-100 shadow-lg rounded-lg">
         <h2 className="text-center text-xl font-bold mb-4 text-yellow-700">
           Add New Partner
         </h2>
-        <form onSubmit={handleSubmit}>
-        
-          {[ 
-            { label: "Name", name: "name", type: "text" },
-            { label: "Specialty", name: "specialty", type: "text" },
-            { label: "Zip Code", name: "zip_code", type: "text" },
-            { label: "Contact Info", name: "contact_info", type: "text" },
-            { label: "Email", name: "email", type: "email" },
-            { label: "Address", name: "address", type: "text" },
-          ].map(({ label, name, type }) => (
-            <div className="mb-4" key={name}>
-              <label
-                htmlFor={name}
-                className="block font-bold mb-2 text-sm capitalize"
-              >
-                {label}
-              </label>
-              <input
-                type={type}
-                id={name}
-                name={name}
-                value={formData[name]}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-yellow-300 rounded-md"
-                required
-              />
-            </div>
-          ))}
+        <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+  <label className="block font-medium text-black mb-1">Telephone</label>
+  <input
+    type="text" // Use tel for phone number input
+    name="name"
+    value={formData.name} // Assuming you have a telephone property in formData
+    onChange={handleChange}
+    className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+  />
+</div>
 
-         
-          <div className="mb-4">
-            <label
-              htmlFor="partner_type"
-              className="block font-bold mb-2 text-sm capitalize"
-            >
-              Partner Type
-            </label>
-            <select
-              id="partner_type"
-              name="partner_type"
-              value={formData.partner_type}
-              onChange={handleInputChange}
-              className="w-full p-2 border border-yellow-300 rounded-md"
-              required
-            >
-              <option value="">Select Partner Type</option>
-              <option value="Vendor">Vendor</option>
-              <option value="Client">Client</option>
-              <option value="Service Provider">Service Provider</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
+  <div>
+  <label className="block font-medium text-black mb-1">Telephone</label>
+  <input
+    type="tel" // Use tel for phone number input
+    name="telephone"
+    value={formData.telephone} // Assuming you have a telephone property in formData
+    onChange={handleChange}
+    className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+  />
+</div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="availability"
-              className="block font-bold mb-2 text-sm capitalize"
-            >
-              Availability
-            </label>
-            <select
-              id="availability"
-              name="availability"
-              value={formData.availability}
-              onChange={handleInputChange}
-              className="w-full p-2 border border-yellow-300 rounded-md"
-              required
-            >
-              <option value="">Select Availability</option>
-              <option value="Available">Available</option>
-              <option value="Unavailable">Unavailable</option>
-              <option value="On Request">On Request</option>
-            </select>
-          </div>
+<div>
+  <label className="block font-medium text-black mb-1">email</label>
+  <input
+    type="email" // Adjust type as needed (email, text)
+    name="contact"
+    value={formData.contact} // Assuming you have a contact property in formData
+    onChange={handleChange}
+    className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+  />
+</div>
 
-       
-          <div className="mb-4">
-            <label
-              htmlFor="status"
-              className="block font-bold mb-2 text-sm capitalize"
-            >
-              Status
-            </label>
-            <select
-              id="status"
-              name="status"
-              value={formData.status}
-              onChange={handleInputChange}
-              className="w-full p-2 border border-yellow-300 rounded-md"
-            >
-              <option value="">Select Status</option>
-              <option value="Active">Active</option>
-              <option value="Suspended">Suspended</option>
-              <option value="Pending">Pending</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-
-          
-          <div className="mb-4 text-center">
-            <button
-              type="submit"
-              className="px-6 py-2 bg-yellow-600 text-white font-bold rounded-md"
-            >
-              {loading ? "Submitting..." : "Submit"}
-            </button>
-          </div>
-        </form>
-      </div>
-
-    
-      <div className="mt-6">
-        <h3 className="text-xl font-bold text-yellow-700 mb-4">Partner List</h3>
-        {loading ? (
-          <p>Loading...</p>
-        ) : error ? (
-          <p className="text-red-500">{error}</p>
-        ) : (
-          <table className="table-auto w-full text-sm text-left text-yellow-700">
-            <thead>
-              <tr>
-                <th className="px-4 py-2 border-b">Name</th>
-                <th className="px-4 py-2 border-b">Specialty</th>
-                <th className="px-4 py-2 border-b">Status</th>
-                <th className="px-4 py-2 border-b">Partner Type</th>
-                <th className="px-4 py-2 border-b">Availability</th>
-              </tr>
-            </thead>
-            <tbody>
-              {partners.map((partner) => (
-                <tr key={partner._id} className="border-b">
-                  <td className="px-4 py-2">{partner.name}</td>
-                  <td className="px-4 py-2">{partner.specialty}</td>
-                  <td className="px-4 py-2">{partner.status}</td>
-                  <td className="px-4 py-2">{partner.partner_type}</td>
-                  <td className="px-4 py-2">{partner.availability}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+  <div>
+  <label className="block font-medium text-black mb-1">Address</label>
+  <input
+    type="text"
+    name="address"
+    value={formData.address} // Assuming you have an address property in formData
+    onChange={handleChange}
+    className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+  />
+</div>
+        <div>
+          <label className="block font-medium text-black mb-1">Gender</label>
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+          >
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Non-binary">Non-binary</option>
+          </select>
+        </div>
+  
+        <div>
+          <label className="block font-medium text-black mb-1">Age Range</label>
+          <select
+            name="age_range"
+            value={formData.age_range}
+            onChange={handleChange}
+            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+          >
+            <option value="">Select Age Range</option>
+            <option value="Minors (under 18)">Minors under 18</option>
+            <option value="Adults (18-64)">Adults 18-64</option>
+            <option value="Seniors (65 and over)">Seniors 65 and over</option>
+          </select>
+        </div>
+  
+        <div>
+          <label className="block font-medium text-black mb-1">Citizenship Status</label>
+          <select
+            name="citizenship_status"
+            value={formData.citizenship_status}
+            onChange={handleChange}
+            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+          >
+            <option value="">Select Citizenship Status</option>
+            <option value="Citizen">Citizen</option>
+            <option value="Resident">Resident</option>
+            <option value="Non-immigrant (temporary visa)">Non-immigrant temporary visa</option>
+            <option value="undocumented">Undocumented</option>
+          </select>
+        </div>
+  
+        <div>
+          <label className="block font-medium text-black mb-1">Insurance</label>
+          <select
+            name="insurance"
+            value={formData.insurance}
+            onChange={handleChange}
+            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+          >
+            <option value="">Select Insurance</option>
+            <option value="Accepts private insurance">Accepts Private Insurance</option>
+            <option value="Accepts Medicare">Accepts Medicare</option>
+            <option value="Accepts Medicaid">Accepts Medicaid</option>
+            <option value="Accepts MAP">Accepts MAP</option>
+            <option value="Accepts Ryan White Program">Accepts Ryan White Program</option>
+            <option value="Accepts patients/clients without insurance">Accepts Patients/Clients Without Insurance</option>
+          </select>
+        </div>
+  
+        <div>
+          <label className="block font-medium text-black mb-1">Zip Code</label>
+          <select
+            name="zip_code"
+            value={formData.zip_code}
+            onChange={handleChange}
+            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+          >
+            <option value="">Select Zip Code</option>
+            {zipCodeOptions.map((zip, index) => (
+              <option key={index} value={zip}>
+                {zip}
+              </option>
+            ))}
+          </select>
+        </div>
+  
+        <div>
+          <label className="block font-medium text-black mb-1">Physical Services</label>
+          <select
+            name="physical"
+            value={formData.physical}
+            onChange={handleChange}
+            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+          >
+            <option value="">Select Physical Service</option>
+            {physicalServices.map((service, index) => (
+              <option key={index} value={service}>
+                {service}
+              </option>
+            ))}
+          </select>
+        </div>
+  
+        <div>
+          <label className="block font-medium text-black mb-1">Mental Services</label>
+          <select
+            name="mental"
+            value={formData.mental}
+            onChange={handleChange}
+            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+          >
+            <option value="">Select Mental Service</option>
+            {mentalServices.map((service, index) => (
+              <option key={index} value={service}>
+                {service}
+              </option>
+            ))}
+          </select>
+        </div>
+  
+        <div>
+          <label className="block font-medium text-black mb-1">
+            Social Determinants of Health
+          </label>
+          <select
+            name="social_determinants_of_health"
+            value={formData.social_determinants_of_health}
+            onChange={handleChange}
+            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+          >
+            <option value="">Select Social Service</option>
+            {socialServices.map((service, index) => (
+              <option key={index} value={service}>
+                {service}
+              </option>
+            ))}
+          </select>
+        </div>
+  
+        <div>
+          <label className="block font-medium text-black mb-1">
+            Offers Transportation
+          </label>
+          <select
+            name="offers_transportation"
+            value={formData.offers_transportation}
+            onChange={handleChange}
+            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+          >
+            <option value="">Select Option</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+  
+        <div>
+          <label className="block font-medium text-black mb-1">Emergency Room</label>
+          <select
+            name="emergency_room"
+            value={formData.emergency_room}
+            onChange={handleChange}
+            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
+          >
+            <option value="">Select Option</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+  
+        <button
+          type="submit"
+          className="w-full bg-yellow-600 text-black font-bold py-3 px-6 rounded hover:bg-yellow-700 transition"
+        >
+         {loading ? "Loading..." : "Apply Filter"}
+        </button>
+      </form>
       </div>
     </div>
   );
 }
 
-
-
-
-export default AddUserPartner
+export default AddUserPartner;

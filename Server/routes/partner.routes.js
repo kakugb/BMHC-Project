@@ -15,12 +15,12 @@ router.get('/:id', partnerController.singlePartner);
 router.put('/update/:id', checkAdminRole, partnerController.updatePartner); 
 
 
-router.delete('/delete/:id', checkAdminRole, partnerController.deletePartner); 
+router.delete('/delete/:id', partnerController.deletePartner); 
 
 
 router.post('/filter', partnerController.filterPartners);
 
-router.post('/filtersingle', partnerController.filterPartnersingle);
+router.post('/filtersingle', partnerController.filterPartnerssingle);
 
 
 module.exports = router;
