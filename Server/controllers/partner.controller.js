@@ -57,6 +57,9 @@ exports.updatePartner = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
+    // Validate input data (e.g., ensure ID is valid, update data is correct)
+    // ... validation logic ...
+
     const updatedPartner = await Partner.findByIdAndUpdate(id, updateData, { new: true });
 
     if (!updatedPartner) {
@@ -65,6 +68,7 @@ exports.updatePartner = async (req, res) => {
 
     res.status(200).json({ message: 'Partner updated successfully', partner: updatedPartner });
   } catch (error) {
+    console.error('Error updating partner:', error); // Log the error for debugging
     res.status(500).json({ message: 'Error updating partner', error: error.message });
   }
 };
@@ -85,11 +89,18 @@ exports.deletePartner = async (req, res) => {
   }
 };
 
+const mongoose = require('mongoose'); // Add this if not already imported
+
 exports.singlePartner = async (req, res) => {
   try {
-  
+   
     const { id } = req.params;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid ID format' });
+    }
+
+    console.log(id);
 
     const partner = await Partner.findById(id);
 
@@ -98,10 +109,12 @@ exports.singlePartner = async (req, res) => {
     }
 
     res.status(200).json(partner);
-  } catch (error) { 
+  } catch (error) {
+    console.error('Error fetching partner:', error.message); // Optional: Log error for debugging
     res.status(500).json({ message: 'Error fetching partner', error: error.message });
   }
 };
+
 
 
 exports.filterPartners = async (req, res) => {

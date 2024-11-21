@@ -176,20 +176,29 @@ function Dashboard() {
         overlayClassName="modal-overlay"
       >
         {selectedPartner ? (
-          <div>
-            <h2 className="text-xl font-bold mb-2">Partner Details</h2>
-            <p><strong>Name:</strong> {selectedPartner.name}</p>
-            <p><strong>Email:</strong> {selectedPartner.telephone}</p>
-            <p><strong>Contact Info:</strong> {selectedPartner.contact}</p>
-            <p><strong>Address:</strong> {selectedPartner.address}</p>
-            <p><strong>Specialty:</strong> {selectedPartner.specialty}</p>
-            <button
-              className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
-              onClick={closeModal}
-            >
-              Close
-            </button>
-          </div>
+           <div>
+           <h2 className="text-xl font-bold mb-2">Partner Details</h2>
+           <p><strong>Name:</strong> {selectedPartner.name}</p>
+           <p><strong>Email:</strong> {selectedPartner.telephone}</p>
+           <p><strong>Contact Info:</strong> {selectedPartner.contact}</p>
+           <p><strong>Zip Code:</strong> {selectedPartner.address}</p>
+           <p><strong>Specialty:</strong> {selectedPartner.gender}</p>
+           <p><strong>Address:</strong> {selectedPartner.age_range}</p>
+           <p><strong>Status:</strong> {selectedPartner.citizenship_status}</p>
+           <p><strong>Status:</strong> {selectedPartner.insurance}</p>
+           <p><strong>Status:</strong> {selectedPartner.zip_code}</p>
+           <p><strong>Status:</strong> {selectedPartner.physical}</p>
+           <p><strong>Status:</strong> {selectedPartner.mental}</p>
+           <p><strong>Status:</strong> {selectedPartner.social_determinants_of_health}</p>
+           <p><strong>Status:</strong> {selectedPartner.offers_transportation}</p>
+           <p><strong>Status:</strong> {selectedPartner.emergency_room}</p>
+           <button
+             onClick={closeModal}
+             className="mt-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+           >
+             Close
+           </button>
+         </div>
         ) : (
           <p>Loading partner details...</p>
         )}

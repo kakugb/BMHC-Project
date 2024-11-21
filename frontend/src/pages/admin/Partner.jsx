@@ -3,7 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import '../../../src/App.css';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 Modal.setAppElement("#root");
 
 function Partner() {
@@ -35,6 +36,7 @@ function Partner() {
       setIsModalOpen(true);
     } catch (error) {
       console.error('Error fetching partner details:', error);
+      
     }
   };
 
@@ -84,9 +86,11 @@ function Partner() {
       })
       .then(() => {
         fetchAllPartners(); 
+        toast.success("Partner deleted successfully!");
       })
       .catch((error) => {
         console.error("Error deleting partner:", error);
+        toast.error("Error deleting partner!");
       });
   };
 
@@ -187,24 +191,48 @@ function Partner() {
             </button>
           </div>
         )}
+        <ToastContainer />
       </div>
 
       {selectedPartner && (
-        <Modal
-          isOpen={isModalOpen}
-          onRequestClose={closeModal}
-          contentLabel="Partner Details"
-          className="modal"
-        >
-          <h2 className="text-2xl font-bold">Partner Details</h2>
-          <p>Name: {selectedPartner.name}</p>
-          <p>Phone: {selectedPartner.telephone}</p>
-          <p>Contact: {selectedPartner.contact}</p>
-          <p>Address: {selectedPartner.address}</p>
-          <p>Gender: {selectedPartner.gender}</p>
-          <p>More Info: {selectedPartner.info}</p>
-          <button className="mt-4 bg-red-500 text-white py-2 px-4 rounded" onClick={closeModal}>Close</button>
-        </Modal>
+        <Modal 
+        isOpen={isModalOpen} 
+        onRequestClose={closeModal} 
+        contentLabel="Partner Details" 
+        className="modal-content" 
+        overlayClassName="modal-overlay"
+      >
+        <h2 className="text-2xl font-bold">Partner Details</h2>
+        {selectedPartner ? (
+          <div>
+          <h2 className="text-xl font-bold mb-2">Partner Details</h2>
+          <p><strong>Name:</strong> {selectedPartner.name}</p>
+          <p><strong>Email:</strong> {selectedPartner.telephone}</p>
+          <p><strong>Contact Info:</strong> {selectedPartner.contact}</p>
+          <p><strong>Zip Code:</strong> {selectedPartner.address}</p>
+          <p><strong>Specialty:</strong> {selectedPartner.gender}</p>
+          <p><strong>Address:</strong> {selectedPartner.age_range}</p>
+          <p><strong>Status:</strong> {selectedPartner.citizenship_status}</p>
+          <p><strong>Status:</strong> {selectedPartner.insurance}</p>
+          <p><strong>Status:</strong> {selectedPartner.zip_code}</p>
+          <p><strong>Status:</strong> {selectedPartner.physical}</p>
+          <p><strong>Status:</strong> {selectedPartner.mental}</p>
+          <p><strong>Status:</strong> {selectedPartner.social_determinants_of_health}</p>
+          <p><strong>Status:</strong> {selectedPartner.offers_transportation}</p>
+          <p><strong>Status:</strong> {selectedPartner.emergency_room}</p>
+          <button
+            onClick={closeModal}
+            className="mt-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            Close
+          </button>
+        </div>
+        ) : (
+          <p>Loading partner details...</p>
+        )}
+        
+      </Modal>
+      
       )}
     </>
   );

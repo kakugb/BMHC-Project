@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from 'axios'
 import '../../../src/App.css'
+
 import Modal from 'react-modal';
 Modal.setAppElement("#root");
 const Dashboard = () => {
@@ -405,29 +406,43 @@ const Dashboard = () => {
         overlayClassName="modal-overlay"
       >
         {selectedPartner ? (
-          <div>
-            <h2 className="text-xl font-bold mb-2">Partner Details</h2>
-            <p><strong>Name:</strong> {selectedPartner.name}</p>
-            <p><strong>Email:</strong> {selectedPartner.telephone}</p>
-            <p><strong>Contact Info:</strong> {selectedPartner.contact}</p>
-            <p><strong>Zip Code:</strong> {selectedPartner.address}</p>
-            <p><strong>Specialty:</strong> {selectedPartner.gender}</p>
-            <p><strong>Address:</strong> {selectedPartner.age_range}</p>
-            <p><strong>Status:</strong> {selectedPartner.citizenship_status}</p>
-            <p><strong>Status:</strong> {selectedPartner.insurance}</p>
-            <p><strong>Status:</strong> {selectedPartner.zip_code}</p>
-            <p><strong>Status:</strong> {selectedPartner.physical}</p>
-            <p><strong>Status:</strong> {selectedPartner.mental}</p>
-            <p><strong>Status:</strong> {selectedPartner.social_determinants_of_health}</p>
-            <p><strong>Status:</strong> {selectedPartner.offers_transportation}</p>
-            <p><strong>Status:</strong> {selectedPartner.emergency_room}</p>
-            <button
-              onClick={closeModal}
-              className="mt-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-            >
-              Close
-            </button>
-          </div>
+           <Modal 
+           isOpen={isModalOpen} 
+           onRequestClose={closeModal} 
+           contentLabel="Partner Details" 
+           className="modal-content" 
+           overlayClassName="modal-overlay"
+         >
+           <h2 className="text-2xl font-bold">Partner Details</h2>
+           {selectedPartner ? (
+             <div>
+             <h2 className="text-xl font-bold mb-2">Partner Details</h2>
+             <p><strong>Name:</strong> {selectedPartner.name}</p>
+             <p><strong>Email:</strong> {selectedPartner.telephone}</p>
+             <p><strong>Contact Info:</strong> {selectedPartner.contact}</p>
+             <p><strong>Zip Code:</strong> {selectedPartner.address}</p>
+             <p><strong>Specialty:</strong> {selectedPartner.gender}</p>
+             <p><strong>Address:</strong> {selectedPartner.age_range}</p>
+             <p><strong>Status:</strong> {selectedPartner.citizenship_status}</p>
+             <p><strong>Status:</strong> {selectedPartner.insurance}</p>
+             <p><strong>Status:</strong> {selectedPartner.zip_code}</p>
+             <p><strong>Status:</strong> {selectedPartner.physical}</p>
+             <p><strong>Status:</strong> {selectedPartner.mental}</p>
+             <p><strong>Status:</strong> {selectedPartner.social_determinants_of_health}</p>
+             <p><strong>Status:</strong> {selectedPartner.offers_transportation}</p>
+             <p><strong>Status:</strong> {selectedPartner.emergency_room}</p>
+             <button
+               onClick={closeModal}
+               className="mt-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+             >
+               Close
+             </button>
+           </div>
+           ) : (
+             <p>Loading partner details...</p>
+           )}
+           
+         </Modal>
         ) : (
           <p>Loading...</p>
         )}

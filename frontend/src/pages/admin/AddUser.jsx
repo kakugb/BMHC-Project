@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function AddUser() {
   const [formData, setFormData] = useState({
     username: '',
@@ -33,14 +34,20 @@ function AddUser() {
         }
       )
       .then((response) => {
-        setSuccessMessage('User added successfully!');
+        
         setErrorMessage('');
         setFormData({ username: '', email: '', password: '', role: '' });
-        
+        toast.success('User Add successfully!');
+        setTimeout(() => {
+        navigate('/admin/dashboard')
+        }, 2000);
       })
+     
       .catch((error) => {
         setErrorMessage('Error adding user. Please try again.');
         setSuccessMessage('');
+        toast.error("Error to register user!");
+        
       });
   };
 
@@ -121,7 +128,7 @@ function AddUser() {
 
           <button
             type="submit"
-            className="w-full bg-yellow-400 text-black font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 focus:outline-none"
+            className="w-full bg-gray-950 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700 focus:outline-none"
           >
             Add User
           </button>
@@ -134,6 +141,7 @@ function AddUser() {
           <div className="mt-4 text-red-600 text-center">{errorMessage}</div>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 }

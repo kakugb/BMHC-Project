@@ -14,7 +14,8 @@ import AddUser from './pages/admin/AddUser';
 import Partner from './pages/admin/Partner';
 import AddUserPartner from './pages/users/AddUserPartner';
 import CheckAuth from './components/CheckAuth';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const App = () => {
   const [isLogged, setIsLogged] = useState(false);
   const [role, setRole] = useState("");
@@ -36,6 +37,7 @@ const App = () => {
   };
 
   return (
+    <>
     <Routes>
       
       <Route path="/" element={
@@ -73,6 +75,9 @@ const App = () => {
     
       <Route path="*" element={<NotFound />} />
     </Routes>
+     <ToastContainer />
+     </>
+    
   );
 };
 

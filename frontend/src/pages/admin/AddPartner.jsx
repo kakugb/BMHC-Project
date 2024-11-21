@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function AddPartner() {
   const [partners, setPartners] = useState([]); // State to hold filtered partners
   const [loading, setLoading] = useState(false); // Loading state for API call
@@ -145,9 +146,11 @@ function AddPartner() {
           Authorization: `Bearer ${token}`  // Add token to the request headers
         }
       });
-      console.log(response.data); // Log the response data for debugging
+      toast.success('Partner Add successfully!');
   
-      // Handle successful response (e.g., clear form, fetch updated partner list)
+     setTimeout(() => {
+      Navigate('/admin/partner')
+     }, 2000);
       setFormData({
         name: "",
         telephone: "",
@@ -168,6 +171,7 @@ function AddPartner() {
     } catch (error) {
       console.error(error); // Log the error for debugging
       setError(error.message || "Error creating partner"); // Set error message
+      toast.error("Error create partner!");
     } finally {
       setLoading(false); // Reset loading state regardless of success or failure
     }
@@ -399,6 +403,7 @@ function AddPartner() {
         </button>
       </form>
       </div>
+      <ToastContainer />
     </div>
   );
 }

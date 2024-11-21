@@ -1,19 +1,19 @@
 const express = require('express');
 const User = require('./models//user.model');
-const mongoose = require('mongoose');
+
 const connectDB = require('./config/db.js')
 const bodyParser = require('body-parser');
 const partnerRoutes = require('./routes/partner.routes.js');
 const userRoutes = require('./routes/user.routes.js');
 require('dotenv').config();
-
+const cors = require('cors');
 const app = express();
 
-const cors = require('cors');
 app.use(cors());
-const PORT = process.env.PORT || 5000;
-
-app.use(bodyParser.json());  
+app.use(express.json());
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({ extended: true }));
+const PORT = process.env.PORT || 5000;  
 
 
 connectDB();
