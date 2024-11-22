@@ -1,11 +1,11 @@
 const Partner = require('../models/partner.model.js');
-
+const mongoose = require('mongoose'); 
 exports.createPartner = async (req, res) => {
   try {
     const { 
       name, 
       telephone, 
-      contact, 
+      email, 
       address, 
       gender, 
       age_range, 
@@ -19,10 +19,14 @@ exports.createPartner = async (req, res) => {
       emergency_room 
     } = req.body;
 
+    const existingPartner = await Partner.findOne({ email }); 
+    if (existingPartner) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
     const newPartner = new Partner({
       name,
       telephone,
-      contact,
+      email,
       address,
       gender,
       age_range,
@@ -57,9 +61,6 @@ exports.updatePartner = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    // Validate input data (e.g., ensure ID is valid, update data is correct)
-    // ... validation logic ...
-
     const updatedPartner = await Partner.findByIdAndUpdate(id, updateData, { new: true });
 
     if (!updatedPartner) {
@@ -68,7 +69,7 @@ exports.updatePartner = async (req, res) => {
 
     res.status(200).json({ message: 'Partner updated successfully', partner: updatedPartner });
   } catch (error) {
-    console.error('Error updating partner:', error); // Log the error for debugging
+    console.error('Error updating partner:', error); 
     res.status(500).json({ message: 'Error updating partner', error: error.message });
   }
 };
@@ -89,7 +90,7 @@ exports.deletePartner = async (req, res) => {
   }
 };
 
-const mongoose = require('mongoose'); // Add this if not already imported
+
 
 exports.singlePartner = async (req, res) => {
   try {
@@ -100,7 +101,7 @@ exports.singlePartner = async (req, res) => {
       return res.status(400).json({ message: 'Invalid ID format' });
     }
 
-    console.log(id);
+
 
     const partner = await Partner.findById(id);
 
@@ -132,72 +133,65 @@ exports.filterPartners = async (req, res) => {
       emergency_room 
     } = req.body;
 
-    const filters = {};
+    let filterQuery = {};
 
-    if (gender) filters.gender = gender;
-    if (age_range) filters.age_range = age_range;
-    if (citizenship_status) filters.citizenship_status = citizenship_status;
-    if (insurance) filters.insurance = insurance;
-    if (zip_code) filters.zip_code = zip_code;
-    if (physical) filters.physical = physical;
-    if (mental) filters.mental = mental;
-    if (social_determinants_of_health) filters.social_determinants_of_health = social_determinants_of_health;
-    if (offers_transportation) filters.offers_transportation = offers_transportation;
-    if (emergency_room) filters.emergency_room = emergency_room;
+    if (gender && gender.length > 0) filterQuery.gender = { $in: gender };
+    if (age_range && age_range.length > 0) filterQuery.age_range = { $in: age_range };
+    if (citizenship_status && citizenship_status.length > 0) filterQuery.citizenship_status = { $in: citizenship_status };
+    if (insurance && insurance.length > 0) filterQuery.insurance = { $in: insurance };
+    if (zip_code && zip_code.length > 0) filterQuery.zip_code = { $in: zip_code };
+    if (physical && physical.length > 0) filterQuery.physical = { $in: physical };
+    if (mental && mental.length > 0) filterQuery.mental = { $in: mental };
+    if (social_determinants_of_health && social_determinants_of_health.length > 0) 
+      filterQuery.social_determinants_of_health = { $in: social_determinants_of_health };
+    if (offers_transportation && offers_transportation.length > 0) 
+      filterQuery.offers_transportation = { $in: offers_transportation };
+    if (emergency_room && emergency_room.length > 0) filterQuery.emergency_room = { $in: emergency_room };
 
-    const partners = await Partner.find(filters);
-
-    if (partners.length === 0) {
-      return res.status(404).json({ message: 'No partners found matching the criteria' });
+    if (Object.keys(filterQuery).length === 0) {
+      return res.status(400).json({ message: 'At least one filter is required' });
     }
-
-    res.status(200).json(partners);
-  } catch (error) {
-    res.status(500).json({ message: 'Error filtering partners', error: error.message });
-  }
-};
-
-exports.filterPartnerssingle = async (req, res) => {
-  try {
-    const filters = req.body;
-
-    // Validate that the filters object is not empty
-    if (Object.keys(filters).length === 0) {
-      return res.status(400).json({ message: 'No filter criteria provided' });
-    }
-
-    // Check if the filters contain a search term for text-based search (name, email, etc.)
-    const filterQuery = {};
-
-    // You can adjust this depending on what fields you expect in the filter
-    if (filters.name) {
-      filterQuery.name = { $regex: filters.name, $options: 'i' };  // case-insensitive search
-    }
-    if (filters.email) {
-      filterQuery.email = { $regex: filters.email, $options: 'i' };  // case-insensitive search
-    }
-    if (filters.telephone) {
-      filterQuery.telephone = { $regex: filters.telephone, $options: 'i' };
-    }
-    if (filters.zip_code) {
-      filterQuery.zip_code = filters.zip_code;
-    }
-    if (filters.status) {
-      filterQuery.status = filters.status;
-    }
-
-    // Query MongoDB using the dynamically created filterQuery
     const partners = await Partner.find(filterQuery);
 
     if (partners.length === 0) {
       return res.status(404).json({ message: 'No partners found matching the criteria' });
     }
+    res.status(200).json(partners);
+  } catch (error) {
+    res.status(500).json({ message: 'Error filtering partners', error: error.message });
+  }
+};
 
-    // Return filtered partners
+
+
+
+exports.filterPartnerByName = async (req, res) => {
+  try {
+    const { name, email } = req.body;  
+    
+    if (!name && !email) {
+      return res.status(400).json({ message: 'Please provide either name or email to filter' });
+    }
+
+    const filterQuery = {};
+    if (name) {
+      filterQuery.name = { $regex: name, $options: 'i' }; 
+    }
+
+    if (email) {
+      filterQuery.email = { $regex: email, $options: 'i' };  
+    }
+
+    const partners = await Partner.find(filterQuery);
+    if (partners.length === 0) {
+      return res.status(404).json({ message: 'No partners found matching the criteria' });
+    }
+
     res.status(200).json(partners);
 
   } catch (error) {
     res.status(500).json({ message: 'Error filtering partners', error: error.message });
   }
 };
+
 

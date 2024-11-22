@@ -1,408 +1,420 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {
+  zipCodeOptions,
+} from "../../utils/data.js";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios"
+import { useNavigate } from "react-router-dom";
 function AddUserPartner() {
-  const [partners, setPartners] = useState([]); // State to hold filtered partners
-  const [loading, setLoading] = useState(false); // Loading state for API call
-  const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPartner, setSelectedPartner] = useState(null);
-  
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
-  
-    "name": "",
-    "telephone": "",
-    "contact": "",
-    "address": "",
-    "gender": "",
-    "age_range": "",
-    "citizenship_status": "",
-    "insurance": "",
-    "zip_code": "",
-    "physical": "",
-    "mental": "",
-    "social_determinants_of_health": "",
-    "offers_transportation": "",
-    "emergency_room": "",
+    name: [],
+    telephone: [],
+    email: [],
+    address: [],
+    gender: [],
+    age_range: [],
+    citizenship_status: [],
+    insurance: [],
+    zip_code: [],
+    physical: [],
+    mental: [],
+    social_determinants_of_health: [],
+    offers_transportation: [],
+    emergency_room: []
   });
-  const [zipCodeInput, setZipCodeInput] = useState("");
-  const zipCodeOptions = [
-    "Downtown Austin - 78701",
-    "South Central Austin - 78704",
-    "Central Austin - 78703",
-    "Central Austin - 78705",
-    "Downtown Austin - 78701",
-"South Central Austin - 78704",
-"Central Austin - 78703",
-"Central Austin - 78705",
-"Central Austin - 78712",
-"Central Austin - 78751",
-"Central Austin - 78756",
-"Central Austin - 78757",
-"East Austin - 78702",
-"East Austin - 78722",
-"Southeast Austin - 78719",
-"Southeast Austin - 78741",
-"Southeast Austin - 78742",
-"Southeast Austin - 78744",
-"Southeast Austin - 78747",
-"South Austin - 78745",
-"South Austin - 78748",
-"Southwest Austin - 78735",
-"Southwest Austin - 78736",
-"Southwest Austin - 78737",
-"Southwest Austin - 78738",
-"Southwest Austin - 78739",
-"Southwest Austin - 78749",
-"Westlake Hills - 78733",
-"Westlake Hills - 78746",
-"Northwest Austin - 78726",
-"Northwest Austin - 78727",
-"Northwest Austin - 78728",
-"Northwest Austin - 78729",
-"Northwest Austin - 78730",
-"Northwest Austin - 78731",
-"Northwest Austin - 78750",
-"Northwest Austin - 78758",
-"Northwest Austin - 78759",
-"Lake Travis - 78732",
-"Lake Travis - 78734",
-"Northeast Austin - 78710",
-"Northeast Austin - 78721",
-"Northeast Austin - 78723",
-"Northeast Austin - 78724",
-"Northeast Austin - 78725",
-"Northeast Austin - 78752",
-"Northeast Austin - 78753",
-"Northeast Austin - 78754",
-"Buda - 78610",
-"Cedar Creek - 78612",
-"Cedar Park - 78613",
-"Coupland - 78615",
-"Del Valle - 78617",
-"Dripping Springs - 78620",
-"Elgin - 78621",
-"Hutto - 78634",
-"Leander - 78641",
-"Leander - 78645",
-"Liberty Hill - 78642",
-"Manchaca - 78652",
-"Manor - 78653",
-"Marble Falls - 78654",
-"Round Mountain - 78663",
-"Round Rock - 78664",
-"Spicewood - 78669"
-  ];
 
-  const physicalServices = [
-    "Physical Care",
-    "Health Screenings", 
-    "MAP Enrollment", 
-    "Public Funded Health Insurance",
-  ];
-
-  const mentalServices = [
-    "Counseling", 
-    "Nutrition Education", 
-    "Psychiatric Assessments & Treatment", 
-    "Trauma & Post-Traumatic Stress", 
-    "Grief Assessments & Processing", 
-    "Therapeutic Services for Severe Mental Illnesses", 
-    "Counseling & Life Coaching Services", 
-    "Medication Management", 
-    "Substance Use Disorders", 
-    "Coping Skills Improvement",
-  ];
-
-  const socialServices = [
-   "Food", 
-        "Diversion", 
-        "Transportation", 
-        "Workforce (Career Skills)", 
-        "Training", 
-        "PSH Supportive Services", 
-        "Respite Medical Care Support", 
-        "Reentry Support Services"
-  ];
   const handleChange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
+    const { value, name } = event.target;
+
+    setFormData((prevformData) => {
+      const currentOptions = prevformData[name] || [];
+
+      if (currentOptions.includes(value)) {
+        return {
+          ...prevformData,
+          [name]: currentOptions.filter((option) => option !== value)
+        };
+      } else {
+        return {
+          ...prevformData,
+          [name]: [...currentOptions, value]
+        };
+      }
     });
   };
+  const handleChange2 = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value
+    });
+  };
+
+
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent default form submission behavior
-  
-    setLoading(true); // Set loading state to indicate ongoing request
-    console.log(formData);
-  
-    // Retrieve the token from localStorage or sessionStorage
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token'); 
-
+    event.preventDefault();
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
+      console.log(formData)
     try {
-      const response = await axios.post('http://localhost:5000/api/partners/create', formData, {
-        headers: {
-          Authorization: `Bearer ${token}`  // Add token to the request headers
-        }
-      });
-      toast.success('Partner Add successfully!');
-  
-     
-      setFormData({
-        name: "",
-        telephone: "",
-        contact: "",
-        address: "",
-        gender: "",
-        age_range: "",
-        citizenship_status: "",
-        insurance: "",
-        zip_code: "",
-        physical: "",
-        mental: "",
-        social_determinants_of_health: "",
-        offers_transportation: "",
-        emergency_room: "",
-      });
-  
-    } catch (error) {
-      console.error(error); // Log the error for debugging
-      setError(error.message || "Error creating partner"); // Set error message
-    } finally {
-      setLoading(false); // Reset loading state regardless of success or failure
-    }
-};
+    
+      const response = await axios.post(
+        "http://localhost:5000/api/partners/create",
+        formData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        } );
+      toast.success("Partner Add successfully!");
 
+      setTimeout(() => {
+        navigate("/user/dashboard");
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+      
+      toast.error("Error create partner!");
+    } 
+  };
 
   return (
-    <div className="min-h-screen p-6  text-black">
-   
+    <div className="w-full mt-6 mx-auto ">
+      <div className="w-11/12 mx-auto  pb-2 px-4 rounded  border-gray-500 shadow-xl shadow-gray-600 bg-gray-200 ">
+        <h1 className="text-center font-bold text-3xl text-black font-mono">
+          Add Partner
+        </h1>
+        <form onSubmit={handleSubmit}>
+          {" "}
+          <div class="mt-8 grid lg:grid-cols-3 gap-4">
+            {" "}
+            <div>
+              {" "}
+              <label
+                for="name"
+                class="text-md text-gray-700 block mb-1 font-medium"
+              >
+                Name
+              </label>{" "}
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+              onChange={handleChange2}
 
-     
-      <div className="max-w-xl mx-auto p-6 bg-yellow-100 shadow-lg rounded-lg">
-        <h2 className="text-center text-xl font-bold mb-4 text-yellow-700">
-          Add New Partner
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-  <label className="block font-medium text-black mb-1">Telephone</label>
-  <input
-    type="text" // Use tel for phone number input
-    name="name"
-    value={formData.name} // Assuming you have a telephone property in formData
-    onChange={handleChange}
-    className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-  />
-</div>
+                class="bg-white border  rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                placeholder="Enter your name"
+              />{" "}
+            </div>{" "}
+            <div>
+              {" "}
+              <label
+                for="email"
+                class="text-md text-gray-700 block mb-1 font-medium"
+              >
+                Email Adress
+              </label>{" "}
+              <input
+                type="text"
+                name="email"
+                id="email"
+                value={formData.email}
+                onChange={handleChange2}
+  
+                class="bg-white border  rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                placeholder="yourmail@provider.com"
+              />{" "}
+            </div>{" "}
+            <div>
+              {" "}
+              <label
+                class="text-md text-gray-700 block mb-1 font-medium"
+              >
+                Contact Number
+              </label>{" "}
+              <input
+                type="text"
+                name="telephone"
+                value={formData.telephone}
+                onChange={handleChange2}  
+                class="bg-white border  rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                placeholder="Enter phone Numeber"
+              />{" "}
+            </div>{" "}
+            <div>
+              {" "}
+              <label
+                for="job"
+                class="text-md text-gray-700 block mb-1 font-medium"
+              >
+                address
+              </label>{" "}
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+              onChange={handleChange2}
+                class="bg-white border  rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                placeholder="(ex. developer)"
+              />{" "}
+            </div>{" "}
+            <div>
+              <label
+               
+                className="text-md text-gray-700 block mb-1 font-medium"
+              >
+                Gender
+              </label>
+              <select
+                id="gender"
+                name="gender"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Non-binary">Non-binary</option>
+              </select>
+              <p>Selected Gender: {formData.gender.join(", ")}</p>
+            </div>
+            <div>
+              <label
+                htmlFor="job"
+                className="text-md text-gray-700 block mb-1 font-medium"
+              >
+                Age Range
+              </label>
+              <select
+                name="age_range"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                onChange={handleChange}
+              >
+                <option value="">Select Age Range</option>
+                <option value="Minors (under 18)">Minors (under 18)</option>
+                <option value="Adults (18-64)">Adults (18-64)</option>
+                <option value="Seniors (65 and over)">
+                  Seniors (65 and over)
+                </option>
+              </select>
+              <p>Selected Age_Range: {formData.age_range.join(", ")}</p>
+            </div>
+            <div>
+              <label className="text-md text-gray-700 block mb-1 font-medium">
+                Citizenship Status
+              </label>
+              <select
+                name="citizenship_status"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="Citizen">Citizen</option>
+                <option value="Resident">Resident</option>
+                <option value="Non-immigrant (temporary visa)">
+                  Non-immigrant (temporary visa)
+                </option>
+                <option value="Undocumented">Undocumented</option>
+              </select>
+              <p>
+                Selected Citizenship :{" "}
+                {formData.citizenship_status.join(", ")}
+              </p>
+            </div>
+            <div>
+              <label
+                htmlFor="job"
+                className="text-md text-gray-700 block mb-1 font-medium"
+              >
+                insurance
+              </label>
+              <select
+                name="insurance"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="Accepts private insurance">
+                  Accepts private insurance
+                </option>
+                <option value="Accepts Medicare">Accepts Medicare</option>
+                <option value="Accepts Medicaid">Accepts Medicaid</option>
+                <option value="Accepts MAP">Accepts MAP</option>
+                <option value="Accepts Ryan White Program">
+                  Accepts Ryan White Program
+                </option>
+                <option value="Accepts patients/clients without insurance">
+                  Accepts patients/clients without insurance
+                </option>
+              </select>
+              <p>Selected Insurance: {formData.insurance.join(", ")}</p>
+            </div>
+            <div>
+              <label className="text-md text-gray-700 block mb-1 font-medium">
+                Zip Code
+              </label>
+              <select
+                name="zip_code"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                onChange={handleChange}
+              >
+                 <option value="">
+                      Select
+                    </option>
+                {zipCodeOptions.map((zip, id) => (
+                  <>
+                   
+                    <option value={zip} key={id}>{zip}</option>
+                  </>
+                ))}
+              </select>
 
-  <div>
-  <label className="block font-medium text-black mb-1">Telephone</label>
-  <input
-    type="tel" // Use tel for phone number input
-    name="telephone"
-    value={formData.telephone} // Assuming you have a telephone property in formData
-    onChange={handleChange}
-    className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-  />
-</div>
-
-<div>
-  <label className="block font-medium text-black mb-1">email</label>
-  <input
-    type="email" // Adjust type as needed (email, text)
-    name="contact"
-    value={formData.contact} // Assuming you have a contact property in formData
-    onChange={handleChange}
-    className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-  />
-</div>
-
-  <div>
-  <label className="block font-medium text-black mb-1">Address</label>
-  <input
-    type="text"
-    name="address"
-    value={formData.address} // Assuming you have an address property in formData
-    onChange={handleChange}
-    className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-  />
-</div>
-        <div>
-          <label className="block font-medium text-black mb-1">Gender</label>
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-          >
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Non-binary">Non-binary</option>
-          </select>
-        </div>
-  
-        <div>
-          <label className="block font-medium text-black mb-1">Age Range</label>
-          <select
-            name="age_range"
-            value={formData.age_range}
-            onChange={handleChange}
-            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-          >
-            <option value="">Select Age Range</option>
-            <option value="Minors (under 18)">Minors under 18</option>
-            <option value="Adults (18-64)">Adults 18-64</option>
-            <option value="Seniors (65 and over)">Seniors 65 and over</option>
-          </select>
-        </div>
-  
-        <div>
-          <label className="block font-medium text-black mb-1">Citizenship Status</label>
-          <select
-            name="citizenship_status"
-            value={formData.citizenship_status}
-            onChange={handleChange}
-            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-          >
-            <option value="">Select Citizenship Status</option>
-            <option value="Citizen">Citizen</option>
-            <option value="Resident">Resident</option>
-            <option value="Non-immigrant (temporary visa)">Non-immigrant temporary visa</option>
-            <option value="undocumented">Undocumented</option>
-          </select>
-        </div>
-  
-        <div>
-          <label className="block font-medium text-black mb-1">Insurance</label>
-          <select
-            name="insurance"
-            value={formData.insurance}
-            onChange={handleChange}
-            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-          >
-            <option value="">Select Insurance</option>
-            <option value="Accepts private insurance">Accepts Private Insurance</option>
-            <option value="Accepts Medicare">Accepts Medicare</option>
-            <option value="Accepts Medicaid">Accepts Medicaid</option>
-            <option value="Accepts MAP">Accepts MAP</option>
-            <option value="Accepts Ryan White Program">Accepts Ryan White Program</option>
-            <option value="Accepts patients/clients without insurance">Accepts Patients/Clients Without Insurance</option>
-          </select>
-        </div>
-  
-        <div>
-          <label className="block font-medium text-black mb-1">Zip Code</label>
-          <select
-            name="zip_code"
-            value={formData.zip_code}
-            onChange={handleChange}
-            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-          >
-            <option value="">Select Zip Code</option>
-            {zipCodeOptions.map((zip, index) => (
-              <option key={index} value={zip}>
-                {zip}
-              </option>
-            ))}
-          </select>
-        </div>
-  
-        <div>
-          <label className="block font-medium text-black mb-1">Physical Services</label>
-          <select
-            name="physical"
-            value={formData.physical}
-            onChange={handleChange}
-            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-          >
-            <option value="">Select Physical Service</option>
-            {physicalServices.map((service, index) => (
-              <option key={index} value={service}>
-                {service}
-              </option>
-            ))}
-          </select>
-        </div>
-  
-        <div>
-          <label className="block font-medium text-black mb-1">Mental Services</label>
-          <select
-            name="mental"
-            value={formData.mental}
-            onChange={handleChange}
-            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-          >
-            <option value="">Select Mental Service</option>
-            {mentalServices.map((service, index) => (
-              <option key={index} value={service}>
-                {service}
-              </option>
-            ))}
-          </select>
-        </div>
-  
-        <div>
-          <label className="block font-medium text-black mb-1">
-            Social Determinants of Health
-          </label>
-          <select
-            name="social_determinants_of_health"
-            value={formData.social_determinants_of_health}
-            onChange={handleChange}
-            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-          >
-            <option value="">Select Social Service</option>
-            {socialServices.map((service, index) => (
-              <option key={index} value={service}>
-                {service}
-              </option>
-            ))}
-          </select>
-        </div>
-  
-        <div>
-          <label className="block font-medium text-black mb-1">
-            Offers Transportation
-          </label>
-          <select
-            name="offers_transportation"
-            value={formData.offers_transportation}
-            onChange={handleChange}
-            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-          >
-            <option value="">Select Option</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </select>
-        </div>
-  
-        <div>
-          <label className="block font-medium text-black mb-1">Emergency Room</label>
-          <select
-            name="emergency_room"
-            value={formData.emergency_room}
-            onChange={handleChange}
-            className="w-full border border-black p-3 rounded bg-yellow-50 text-black"
-          >
-            <option value="">Select Option</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </select>
-        </div>
-  
-        <button
-          type="submit"
-          className="w-full bg-yellow-600 text-black font-bold py-3 px-6 rounded hover:bg-yellow-700 transition"
-        >
-         {loading ? "Loading..." : "Apply Filter"}
-        </button>
-      </form>
+              <p>Selected Gender: {formData.zip_code.join(", ")}</p>
+            </div>
+            <div>
+              <label
+                htmlFor="job"
+                className="text-md text-gray-700 block mb-1 font-medium"
+              >
+                Physical
+              </label>
+              <select
+                name="physical"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="Physical Care">Physical Care</option>
+                <option value="Health Screenings">Health Screenings</option>
+                <option value="MAP Enrollment">MAP Enrollment</option>
+                <option value="Public Funded Health Insurance">
+                  Public Funded Health Insurance
+                </option>
+              </select>
+              <p>Selected In: {formData.physical.join(", ")}</p>
+            </div>
+            <div>
+              <label
+                htmlFor="job"
+                className="text-md text-gray-700 block mb-1 font-medium"
+              >
+                Mental
+              </label>
+              <select
+                name="mental"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="Counseling">Counseling</option>
+                <option value="Nutrition Education">Nutrition Education</option>
+                <option value="Psychiatric Assessments & Treatment">
+                  Psychiatric Assessments & Treatment
+                </option>
+                <option value="Trauma & Post-Traumatic Stress">
+                  Trauma & Post-Traumatic Stress
+                </option>
+                <option value="Grief Assessments & Processing">
+                  Grief Assessments & Processing
+                </option>
+                <option value="Therapeutic Services for Severe Mental Illnesses">
+                  Therapeutic Services for Severe Mental Illnesses
+                </option>
+                <option value="Counseling & Life Coaching Services">
+                  Counseling & Life Coaching Services
+                </option>
+                <option value="Medication Management">
+                  Medication Management
+                </option>
+                <option value="Substance Use Disorders">
+                  Substance Use Disorders
+                </option>
+                <option value="Coping Skills Improvement">
+                  Coping Skills Improvement
+                </option>
+              </select>
+              <p>Selected Mental: {formData.mental.join(", ")}</p>
+            </div>
+            <div>
+              <label className="text-md text-gray-700 block mb-1 font-medium">
+                Social Determinants of Health
+              </label>
+              <select
+                name="social_determinants_of_health"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="Food">Food</option>
+                <option value="Diversion">Diversion</option>
+                <option value="Transportation">Transportation</option>
+                <option value="Workforce (Career Skills)">
+                  Workforce (Career Skills)
+                </option>
+                <option value="Training">Training</option>
+                <option value="PSH Supportive Services">
+                  PSH Supportive Services
+                </option>
+                <option value="Respite Medical Care Support">
+                  Respite Medical Care Support
+                </option>
+                <option value="Reentry Support Services">
+                  Reentry Support Services
+                </option>
+              </select>
+              <p>Selected In: {formData.social_determinants_of_health.join(", ")}</p>
+            </div>
+            <div>
+              <label className="text-md text-gray-700 block mb-1 font-medium">
+                Offer Transportation
+              </label>
+              <select
+                name="offers_transportation"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+              <p>
+                Selected In: {formData.offers_transportation.join(", ")}
+              </p>
+            </div>
+            <div>
+              <label className="text-md text-gray-700 block mb-1 font-medium">
+                Emergency Room
+              </label>
+              <select
+                name="emergency_room"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+              <p>Selected In: {formData.emergency_room.join(", ")}</p>
+            </div>
+          </div>{" "}
+          <div class="w-full flex justify-center space-x-4 mt-6 mx-auto py-2">
+            {" "}
+            <button
+              type="submit"
+              class="w-md py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50"
+            >
+              Add Partner
+            </button>{" "}
+          </div>{" "}
+        </form>
       </div>
       <ToastContainer />
     </div>
   );
 }
+
+
+
 
 export default AddUserPartner;

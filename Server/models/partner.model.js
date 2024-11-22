@@ -10,31 +10,32 @@ const partnerSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    contact: {
+    email: {
       type: String,
       required: true,
+      unique: true
     },
     address: {
       type: String,
       required: true,
     },
     gender: {
-      type: String,
+      type: [String],
       enum: ["Male", "Female", "Non-binary"],
       required: true,
     },
     age_range: {
-      type: String,
+      type: [String],
       enum: ["Minors (under 18)", "Adults (18-64)", "Seniors (65 and over)"],
       required: true,
     },
     citizenship_status: {
-      type: String,
+      type: [String],
       enum: ["Citizen", "Resident", "Non-immigrant (temporary visa)", "Undocumented"],
       required: true,
     },
     insurance: {
-      type: String,
+      type: [String],
       enum: [
         "Accepts private insurance",
         "Accepts Medicare",
@@ -46,11 +47,11 @@ const partnerSchema = new mongoose.Schema(
       required: true,
     },
     zip_code: {
-      type: String, 
+      type: [String], 
       required: true,
     },
     physical: {
-      type: String,
+      type: [String],
       enum: [
         "Physical Care",
         "Health Screenings", 
@@ -60,7 +61,7 @@ const partnerSchema = new mongoose.Schema(
       required: true,
     },
     mental: {
-      type: String,
+      type: [String],
       enum: [
         "Counseling", 
         "Nutrition Education", 
@@ -76,7 +77,7 @@ const partnerSchema = new mongoose.Schema(
       required: true,
     },
     social_determinants_of_health: {
-      type: String,
+      type: [String],
       enum: [
         "Food", 
         "Diversion", 
@@ -90,12 +91,12 @@ const partnerSchema = new mongoose.Schema(
       required: true,
     },
     offers_transportation: {
-      type: String,
+      type: [String],
       enum: ["Yes", "No"],
       required: true,
     },
     emergency_room: {
-      type: String,
+      type: [String],
       enum: ["Yes", "No"],
       required: true,
     }

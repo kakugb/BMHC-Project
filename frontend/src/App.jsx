@@ -9,8 +9,7 @@ import UpdatePartner from './pages/admin/UpdatePartner';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import NotFound from './pages/Notfound';
-import AddPartner from './pages/admin/AddPartner';
-import AddUser from './pages/admin/AddUser';
+import AddPartner from './pages/admin/AddPartner'
 import Partner from './pages/admin/Partner';
 import AddUserPartner from './pages/users/AddUserPartner';
 import CheckAuth from './components/CheckAuth';
@@ -56,7 +55,6 @@ const App = () => {
         </CheckAuth>
       }>
         <Route path="dashboard" element={<Dashboard />} />
-        <Route path="adduser" element={<AddUser />} />
         <Route path="partner" element={<Partner />} />
         <Route path="addPartner" element={<AddPartner />} />
         <Route path="updatePartner/:id" element={<UpdatePartner />} />

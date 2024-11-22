@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import Modal from 'react-modal';
-import '../../../src/App.css';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Modal from "react-modal";
+import "../../../src/App.css";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 Modal.setAppElement("#root");
 
 function Partner() {
@@ -13,16 +14,16 @@ function Partner() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');  // State for search query
+  const [searchQuery, setSearchQuery] = useState("");
   const entriesPerPage = 7;
 
   const fetchAllPartners = () => {
     axios
-      .get('http://localhost:5000/api/partners/list')
-      .then(response => {
+      .get("http://localhost:5000/api/partners/list")
+      .then((response) => {
         setPartners(response.data);
       })
-      .catch(error => console.error('Error fetching partners:', error));
+      .catch((error) => console.error("Error fetching partners:", error));
   };
 
   useEffect(() => {
@@ -31,12 +32,13 @@ function Partner() {
 
   const fetchPartnerDetails = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/partners/${id}`);
+      const response = await axios.get(
+        `http://localhost:5000/api/partners/${id}`
+      );
       setSelectedPartner(response.data);
       setIsModalOpen(true);
     } catch (error) {
-      console.error('Error fetching partner details:', error);
-      
+      console.error("Error fetching partner details:", error);
     }
   };
 
@@ -45,18 +47,18 @@ function Partner() {
     setSelectedPartner(null);
   };
 
-  // Handle search query change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  // Filter partners based on search query
-  const filteredPartners = partners.filter(partner =>
-    partner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    partner.telephone.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    partner.contact.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    partner.address.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredPartners = partners.filter((partner) => {
+    return (
+      (partner.name ? partner.name.toLowerCase() : '').includes(searchQuery.toLowerCase()) ||
+      (partner.telephone ? partner.telephone.toLowerCase() : '').includes(searchQuery.toLowerCase()) ||
+      (partner.contact ? partner.contact.toLowerCase() : '').includes(searchQuery.toLowerCase()) ||
+      (partner.address ? partner.address.toLowerCase() : '').includes(searchQuery.toLowerCase())
+    );
+  });
 
   const totalPages = Math.ceil(filteredPartners.length / entriesPerPage);
   const currentEntries = filteredPartners.slice(
@@ -71,7 +73,7 @@ function Partner() {
   };
 
   const DeleteRecord = (id) => {
-    const token = localStorage.getItem("token"); 
+    const token = localStorage.getItem("token");
 
     if (!token) {
       console.error("No token found. Please log in.");
@@ -81,11 +83,11 @@ function Partner() {
     axios
       .delete(`http://localhost:5000/api/partners/delete/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`, 
-        },
+          Authorization: `Bearer ${token}`
+        }
       })
       .then(() => {
-        fetchAllPartners(); 
+        fetchAllPartners();
         toast.success("Partner deleted successfully!");
       })
       .catch((error) => {
@@ -94,27 +96,36 @@ function Partner() {
       });
   };
 
-  const updateUser =(id) => {
+  const updateUser = (id) => {
     navigate(`/admin/UpdatePartner/${id}`);
   };
 
   return (
     <>
-      <div className='w-full flex justify-end'>
+      <div className="w-full flex justify-end">
         <div className="w-full max-w-sm min-w-[200px] mt-4 mr-10">
           <div className="relative">
             <input
-              className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-3 pr-28 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+              className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-400 rounded-md pl-3 pr-28 py-3 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
               placeholder="Search partners..."
               value={searchQuery}
               onChange={handleSearchChange}
             />
             <button
-              className="absolute top-1 right-1 flex items-center rounded bg-slate-800 py-1 px-2.5 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+              className="absolute top-1 right-1 flex items-center rounded bg-blue-600 py-2 px-2.5 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
               type="button"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
-                <path fillRule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clipRule="evenodd" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-4 h-4 mr-2"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z"
+                  clipRule="evenodd"
+                />
               </svg>
               Search
             </button>
@@ -122,49 +133,39 @@ function Partner() {
         </div>
       </div>
 
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg mx-4 mt-6">
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-yellow-300 dark:bg-gray-700 dark:text-gray-400">
+      <div className="w-10/12 mx-auto mt-6 ">
+        <table className="w-full divide-y divide-gray-200 bg-gray- p-5">
+          <thead>
             <tr>
-              <th className="px-6 py-3 text-black font-bold text-sm">Name</th>
-              <th className="px-6 py-3 text-black font-bold text-sm">Phone No</th>
-              <th className="px-6 py-3 text-black font-bold text-sm">Contact</th>
-              <th className="px-6 py-3 text-black font-bold text-sm">Address</th>
-              <th className="px-6 py-3 text-black font-bold text-sm">Gender</th>
-              <th className="px-6 py-3 text-black font-bold text-sm text-end">Detail</th>
-              <th className="px-6 py-3 text-black font-bold text-sm text-end">Action</th>
+              <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">Name</th>
+              <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">Email</th>
+              <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">Contact Number</th>
+              <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">Detail</th>
+              <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">Action</th>
             </tr>
           </thead>
-          <tbody>
-            {currentEntries.map((partner, ind) => (
-              <tr
-                key={ind}
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-              >
-                <td className="px-6 py-4 text-black font-semibold">{partner.name}</td>
-                <td className="px-6 py-4 text-black font-semibold">{partner.telephone}</td>
-                <td className="px-6 py-4 text-black font-semibold">{partner.contact}</td>
-                <td className="px-6 py-4 text-black font-semibold">{partner.address}</td>
-                <td className="px-6 py-4 text-black font-semibold">{partner.gender}</td>
 
-                <td className=" py-4">
-                  <button
-                    className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    onClick={() => fetchPartnerDetails(partner._id)}
-                  >
-                    More Info
+          <tbody className="bg-white divide-y divide-gray-200">
+            {currentEntries.map((partner, ind) => (
+              <tr key={ind}>
+                <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">{partner.name}</td>
+                <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">{partner.email}</td>
+                <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">{partner.telephone}</td>
+                <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
+                  <button className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800" onClick={() => fetchPartnerDetails(partner._id)}>
+                    View Detail
                   </button>
                 </td>
-                <td className="flex justify-center py-4">
-                  <button className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 mr-3" onClick={() => updateUser(partner._id)}>Update</button>
-                  <button className="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-4 py-1" onClick={() => DeleteRecord(partner._id)}>Delete</button>
+                <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
+                  <button className="px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:shadow-outline-blue active:bg-blue-600 transition duration-150 ease-in-out" onClick={() => updateUser(partner._id)}>Edit</button>
+                  <button className="ml-2 px-4 texxt-md font-semibold py-2 text-white bg-red-600 rounded-md hover:bg-red-500 focus:outline-none focus:shadow-outline-red active:bg-red-600 transition duration-150 ease-in-out" onClick={() => DeleteRecord(partner._id)}>Delete</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        {partners.length > 7 && (
+        {filteredPartners.length > entriesPerPage && (
           <div className="flex justify-center py-4">
             <button
               className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
@@ -173,15 +174,7 @@ function Partner() {
             >
               Previous
             </button>
-            {[...Array(totalPages)].map((_, index) => (
-              <button
-                key={index}
-                className={`px-4 py-2 ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'} rounded-md mx-1`}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
+            <span className="px-4 py-2 text-lg">{currentPage}</span>
             <button
               className="px-4 py-2 bg-gray-500 text-white rounded-r-md"
               onClick={() => handlePageChange(currentPage + 1)}
@@ -191,49 +184,47 @@ function Partner() {
             </button>
           </div>
         )}
-        <ToastContainer />
       </div>
 
-      {selectedPartner && (
-        <Modal 
-        isOpen={isModalOpen} 
-        onRequestClose={closeModal} 
-        contentLabel="Partner Details" 
-        className="modal-content" 
-        overlayClassName="modal-overlay"
+      <Modal
+  isOpen={isModalOpen}
+  onRequestClose={closeModal}
+  contentLabel="Partner Details"
+  className="modal-content w-[1900px]" 
+  overlayClassName="modal-overlay"
+>
+  {selectedPartner ? (
+    <div>
+      <h2 className="text-xl font-bold mb-2">Partner Details</h2>
+     
+      <p className="font-semibold "><strong>Name:</strong> {selectedPartner.name}</p>
+      <p className="font-semibold "><strong>Email:</strong> {selectedPartner.telephone}</p>
+      <p className="font-semibold "><strong>Contact Info:</strong> {selectedPartner.contact}</p>
+      <p className="font-semibold "><strong>Address :</strong> {selectedPartner.address}</p>
+      <p className="font-semibold "><strong>Gender :</strong> {selectedPartner.gender}</p>
+      <p className="font-semibold "><strong>Age Range :</strong> {selectedPartner.age_range}</p>
+      <p className="font-semibold "><strong>Citizenship Status:</strong> {selectedPartner.citizenship_status}</p>
+      <p className="font-semibold "><strong>Insurance:</strong> {selectedPartner.insurance}</p>
+      <p className="font-semibold "><strong>Zip Code:</strong> {selectedPartner.zip_code}</p>
+      <p className="font-semibold "><strong>Physical:</strong> {selectedPartner.physical}</p>
+      <p className="font-semibold "><strong>Mental:</strong> {selectedPartner.mental}</p>
+      <p className="font-semibold "><strong>Socal Determinants:</strong> {selectedPartner.social_determinants_of_health}</p>
+      <p className="font-semibold "><strong>Offer Transportation:</strong> {selectedPartner.offers_transportation}</p>
+      <p className="font-semibold "><strong>Emergency Room:</strong> {selectedPartner.emergency_room}</p>
+      <button
+        onClick={closeModal}
+        className="mt-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
       >
-        <h2 className="text-2xl font-bold">Partner Details</h2>
-        {selectedPartner ? (
-          <div>
-          <h2 className="text-xl font-bold mb-2">Partner Details</h2>
-          <p><strong>Name:</strong> {selectedPartner.name}</p>
-          <p><strong>Email:</strong> {selectedPartner.telephone}</p>
-          <p><strong>Contact Info:</strong> {selectedPartner.contact}</p>
-          <p><strong>Zip Code:</strong> {selectedPartner.address}</p>
-          <p><strong>Specialty:</strong> {selectedPartner.gender}</p>
-          <p><strong>Address:</strong> {selectedPartner.age_range}</p>
-          <p><strong>Status:</strong> {selectedPartner.citizenship_status}</p>
-          <p><strong>Status:</strong> {selectedPartner.insurance}</p>
-          <p><strong>Status:</strong> {selectedPartner.zip_code}</p>
-          <p><strong>Status:</strong> {selectedPartner.physical}</p>
-          <p><strong>Status:</strong> {selectedPartner.mental}</p>
-          <p><strong>Status:</strong> {selectedPartner.social_determinants_of_health}</p>
-          <p><strong>Status:</strong> {selectedPartner.offers_transportation}</p>
-          <p><strong>Status:</strong> {selectedPartner.emergency_room}</p>
-          <button
-            onClick={closeModal}
-            className="mt-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-          >
-            Close
-          </button>
-        </div>
-        ) : (
-          <p>Loading partner details...</p>
-        )}
-        
-      </Modal>
-      
-      )}
+        Close
+      </button>
+    </div>
+  ) : (
+    <p>Loading partner details...</p>
+  )}
+</Modal>
+
+
+      <ToastContainer />
     </>
   );
 }
