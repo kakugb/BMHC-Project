@@ -1,9 +1,5 @@
 export const zipCodeOptions = [
     "Downtown Austin - 78701",
-    "South Central Austin - 78704",
-    "Central Austin - 78703",
-    "Central Austin - 78705",
-    "Downtown Austin - 78701",
 "South Central Austin - 78704",
 "Central Austin - 78703",
 "Central Austin - 78705",
@@ -64,6 +60,7 @@ export const zipCodeOptions = [
 "Round Mountain - 78663",
 "Round Rock - 78664",
 "Spicewood - 78669"
+
   ];
 
 

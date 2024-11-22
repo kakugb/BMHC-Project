@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 
 const AdminLayout = () => {
   return (
-    <div className='w-full h-screen bg-yellow-200'>
+    <div className='w-full h-screen'>
       <Navbar/>
       <main>
 
