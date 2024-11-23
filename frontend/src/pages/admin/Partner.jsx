@@ -104,7 +104,7 @@ function Partner() {
     <>
       <div className="w-full flex justify-end">
         <div className="w-full max-w-sm min-w-[200px] mt-4 mr-10">
-          <div className="relative">
+          <div className="relative -z-10">
             <input
               className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-400 rounded-md pl-3 pr-28 py-3 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
               placeholder="Search partners..."

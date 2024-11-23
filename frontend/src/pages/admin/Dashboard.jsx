@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useRef } from "react";
 import {
   zipCodeOptions,
   physicalServices,
@@ -13,7 +13,6 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState(null);
 
-  const [partners, setPartners] = useState([]);
   const [filteredPartners, setFilteredPartners] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
@@ -129,13 +128,7 @@ const Dashboard = () => {
     fields.map(() => ({ isOpen: false, search: "", selectedOptions: [] }))
   );
 
-  const toggleDropdown = (index) => {
-    setDropdowns((prev) =>
-      prev.map((dropdown, i) =>
-        i === index ? { ...dropdown, isOpen: !dropdown.isOpen } : dropdown
-      )
-    );
-  };
+  
 
   const handleOptionToggle = (index, option) => {
     setDropdowns((prev) =>
@@ -211,6 +204,41 @@ const Dashboard = () => {
     return <div>{error}</div>;
   }
 
+  const dropdownRefs = useRef([]); // Ref to track each dropdown
+
+  // Function to handle dropdown toggle
+  const toggleDropdown = (index) => {
+    setDropdowns((prev) =>
+      prev.map((dropdown, i) =>
+        i === index ? { ...dropdown, isOpen: !dropdown.isOpen } : dropdown
+      )
+    );
+  };
+
+  // Function to handle clicks outside of the dropdown
+  const handleClickOutside = (event) => {
+    dropdownRefs.current.forEach((dropdown, index) => {
+      if (dropdown && !dropdown.contains(event.target)) {
+        // Close dropdown if the click is outside
+        setDropdowns((prev) =>
+          prev.map((dropdown, i) =>
+            i === index ? { ...dropdown, isOpen: false } : dropdown
+          )
+        );
+      }
+    });
+  };
+
+  // Add event listener for clicks outside of the dropdown
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+
+
   return (
     <>
       <div className="w-full flex justify-normal gap-2 mr-7">
@@ -226,7 +254,7 @@ const Dashboard = () => {
               );
 
               return (
-                <div key={field.key} className="relative w-full max-w-sm">
+                <div key={field.key} className="relative w-full max-w-sm" ref={(el) => (dropdownRefs.current[index] = el)}>
                   <button
                     type="button"
                     onClick={() => toggleDropdown(index)}
