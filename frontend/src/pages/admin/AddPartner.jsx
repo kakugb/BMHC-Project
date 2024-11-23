@@ -73,7 +73,7 @@ function AddPartner() {
       toast.success("Partner Add successfully!");
 
       setTimeout(() => {
-        navigate("/admin/partner");
+        navigate("/user/dashboard");
       }, 2000);
     } catch (error) {
       console.error(error);
@@ -126,7 +126,7 @@ function AddPartner() {
                 onChange={handleChange2}
   
                 class="bg-white border  rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                placeholder="yourmail@provider.com"
+                placeholder="yourmail@gmail.com"
               />{" "}
             </div>{" "}
             <div>
@@ -159,7 +159,24 @@ function AddPartner() {
                 value={formData.address}
               onChange={handleChange2}
                 class="bg-white border  rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                placeholder="(ex. developer)"
+                placeholder="Enter your Address"
+              />{" "}
+            </div>{" "}
+            <div>
+              {" "}
+              <label
+                for="job"
+                class="text-md text-gray-700 block mb-1 font-medium"
+              >
+                Zip Code
+              </label>{" "}
+              <input
+                type="text"
+                name="zip_code"
+                value={formData.zip_code}
+              onChange={handleChange2}
+                class="bg-white border  rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                placeholder="(Enter Zip code in Number)"
               />{" "}
             </div>{" "}
             <div>
@@ -175,7 +192,7 @@ function AddPartner() {
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 onChange={handleChange}
               >
-                <option value="">Select</option>
+                <option value="">Select Gender</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Non-binary">Non-binary</option>
@@ -212,7 +229,7 @@ function AddPartner() {
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 onChange={handleChange}
               >
-                <option value="">Select</option>
+                <option value="">Select Your Citizenship</option>
                 <option value="Citizen">Citizen</option>
                 <option value="Resident">Resident</option>
                 <option value="Non-immigrant (temporary visa)">
@@ -237,7 +254,7 @@ function AddPartner() {
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 onChange={handleChange}
               >
-                <option value="">Select</option>
+                <option value="">Select Insurance</option>
                 <option value="Accepts private insurance">
                   Accepts private insurance
                 </option>
@@ -253,28 +270,7 @@ function AddPartner() {
               </select>
               <p>Selected Insurance: {formData.insurance.join(", ")}</p>
             </div>
-            <div>
-              <label className="text-md text-gray-700 block mb-1 font-medium">
-                Zip Code
-              </label>
-              <select
-                name="zip_code"
-                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                onChange={handleChange}
-              >
-                 <option value="">
-                      Select
-                    </option>
-                {zipCodeOptions.map((zip, id) => (
-                  <>
-                   
-                    <option value={zip} key={id}>{zip}</option>
-                  </>
-                ))}
-              </select>
-
-              <p>Selected Gender: {formData.zip_code.join(", ")}</p>
-            </div>
+           
             <div>
               <label
                 htmlFor="job"
@@ -287,7 +283,7 @@ function AddPartner() {
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 onChange={handleChange}
               >
-                <option value="">Select</option>
+                <option value="">Select physical</option>
                 <option value="Physical Care">Physical Care</option>
                 <option value="Health Screenings">Health Screenings</option>
                 <option value="MAP Enrollment">MAP Enrollment</option>
@@ -309,7 +305,7 @@ function AddPartner() {
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 onChange={handleChange}
               >
-                <option value="">Select</option>
+                <option value="">Select Mental</option>
                 <option value="Counseling">Counseling</option>
                 <option value="Nutrition Education">Nutrition Education</option>
                 <option value="Psychiatric Assessments & Treatment">
@@ -348,7 +344,7 @@ function AddPartner() {
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 onChange={handleChange}
               >
-                <option value="">Select</option>
+                <option value="">Select Social Determinants of Health</option>
                 <option value="Food">Food</option>
                 <option value="Diversion">Diversion</option>
                 <option value="Transportation">Transportation</option>
@@ -375,14 +371,14 @@ function AddPartner() {
               <select
                 name="offers_transportation"
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                onChange={handleChange}
+                onChange={handleChange2}
               >
-                <option value="">Select</option>
+                <option value="">Select offer transportation</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
               </select>
               <p>
-                Selected In: {formData.offers_transportation.join(", ")}
+                Selected In: {formData.offers_transportation}
               </p>
             </div>
             <div>
@@ -392,13 +388,13 @@ function AddPartner() {
               <select
                 name="emergency_room"
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                onChange={handleChange}
+                onChange={handleChange2}
               >
-                <option value="">Select</option>
+                <option value="">Select Emergency Room</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
               </select>
-              <p>Selected In: {formData.emergency_room.join(", ")}</p>
+              <p>Selected In: {formData.emergency_room}</p>
             </div>
           </div>{" "}
           <div class="w-full flex justify-center space-x-4 mt-6 mx-auto py-2">
@@ -416,5 +412,11 @@ function AddPartner() {
     </div>
   );
 }
+
+
+
+
+
+
 
 export default AddPartner;

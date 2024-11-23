@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Modal from "react-modal";
 import "../../../src/App.css";
 
@@ -8,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 Modal.setAppElement("#root");
 
 function Dashboard() {
-
+  const navigate = useNavigate();
   const [partners, setPartners] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -71,13 +72,38 @@ function Dashboard() {
     }
   };
 
+  const DeleteRecord = (id) => {
+    const token = localStorage.getItem("token");
 
+    if (!token) {
+      console.error("No token found. Please log in.");
+      return;
+    }
 
+    axios
+      .delete(`http://localhost:5000/api/partners/delete/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then(() => {
+        fetchAllPartners();
+        toast.success("Partner deleted successfully!");
+      })
+      .catch((error) => {
+        console.error("Error deleting partner:", error);
+        toast.error("Error deleting partner!");
+      });
+  };
+
+  const updateUser = (id) => {
+    navigate(`/admin/UpdatePartner/${id}`);
+  };
 
   return (
     <>
       <div className="w-full flex justify-end">
-        <div className="w-full max-w-sm min-w-[200px] mt-2 mr-10">
+        <div className="w-full max-w-sm min-w-[200px] mt-4 mr-10">
           <div className="relative">
             <input
               className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-400 rounded-md pl-3 pr-28 py-3 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
@@ -107,7 +133,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="w-10/12 mx-auto mt-3 ">
+      <div className="w-10/12 mx-auto mt-6 ">
         <table className="w-full divide-y divide-gray-200 bg-gray- p-5">
           <thead>
             <tr>
@@ -115,7 +141,7 @@ function Dashboard() {
               <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">Email</th>
               <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">Contact Number</th>
               <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">Detail</th>
-              
+              <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">Action</th>
             </tr>
           </thead>
 
@@ -130,7 +156,10 @@ function Dashboard() {
                     View Detail
                   </button>
                 </td>
-              
+                <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
+                  <button className="px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:shadow-outline-blue active:bg-blue-600 transition duration-150 ease-in-out" onClick={() => updateUser(partner._id)}>Edit</button>
+                  <button className="ml-2 px-4 texxt-md font-semibold py-2 text-white bg-red-600 rounded-md hover:bg-red-500 focus:outline-none focus:shadow-outline-red active:bg-red-600 transition duration-150 ease-in-out" onClick={() => DeleteRecord(partner._id)}>Delete</button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -158,49 +187,149 @@ function Dashboard() {
       </div>
 
       <Modal
-  isOpen={isModalOpen}
-  onRequestClose={closeModal}
-  contentLabel="Partner Details"
-  className="modal-content w-[1900px]" 
-  overlayClassName="modal-overlay"
->
-  {selectedPartner ? (
-    <div>
-      <h2 className="text-xl font-bold mb-2">Partner Details</h2>
-     
-      <p className="font-semibold "><strong>Name:</strong> {selectedPartner.name}</p>
-      <p className="font-semibold "><strong>Email:</strong> {selectedPartner.telephone}</p>
-      <p className="font-semibold "><strong>Contact Info:</strong> {selectedPartner.contact}</p>
-      <p className="font-semibold "><strong>Address :</strong> {selectedPartner.address}</p>
-      <p className="font-semibold "><strong>Gender :</strong> {selectedPartner.gender}</p>
-      <p className="font-semibold "><strong>Age Range :</strong> {selectedPartner.age_range}</p>
-      <p className="font-semibold "><strong>Citizenship Status:</strong> {selectedPartner.citizenship_status}</p>
-      <p className="font-semibold "><strong>Insurance:</strong> {selectedPartner.insurance}</p>
-      <p className="font-semibold "><strong>Zip Code:</strong> {selectedPartner.zip_code}</p>
-      <p className="font-semibold "><strong>Physical:</strong> {selectedPartner.physical}</p>
-      <p className="font-semibold "><strong>Mental:</strong> {selectedPartner.mental}</p>
-      <p className="font-semibold "><strong>Socal Determinants:</strong> {selectedPartner.social_determinants_of_health}</p>
-      <p className="font-semibold "><strong>Offer Transportation:</strong> {selectedPartner.offers_transportation}</p>
-      <p className="font-semibold "><strong>Emergency Room:</strong> {selectedPartner.emergency_room}</p>
-      <button
-        onClick={closeModal}
-        className="mt-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Partner Details"
+        className="modal-content w-[1900px]"
+        overlayClassName="modal-overlay"
       >
-        Close
-      </button>
-    </div>
-  ) : (
-    <p>Loading partner details...</p>
-  )}
-</Modal>
+        {selectedPartner ? (
+          <div>
+            <h2 className="text-xl font-bold mb-2">Partner Details</h2>
+
+            <p className="font-semibold mt-2">
+              <strong>Name:</strong>
+              <span className="ml-5"> {selectedPartner.name}</span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Email:</strong>{" "}
+              <span className="ml-5">{selectedPartner.email}</span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Contact Info:</strong>
+              <span className="ml-5"> {selectedPartner.telephone}</span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Address :</strong>{" "}
+              <span className="ml-5">{selectedPartner.address}</span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Gender :</strong>{" "}
+              <span className="ml-5">
+                {selectedPartner.gender
+                  ? Array.isArray(selectedPartner.gender)
+                    ? selectedPartner.gender
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.gender})`
+                  : "No data available"}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Age Range :</strong>{" "}
+              <span className="ml-5">
+                {selectedPartner.age_range
+                  ? Array.isArray(selectedPartner.age_range)
+                    ? selectedPartner.age_range
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.age_range})`
+                  : "No data available"}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Citizenship Status:</strong>{" "}
+              <span className="ml-5">
+                {selectedPartner.citizenship_status
+                  ? Array.isArray(selectedPartner.citizenship_status)
+                    ? selectedPartner.citizenship_status
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.citizenship_status})`
+                  : "No data available"}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Insurance:</strong>
+              <span className="ml-5">
+                {" "}
+                {selectedPartner.insurance
+                  ? Array.isArray(selectedPartner.insurance)
+                    ? selectedPartner.insurance
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.insurance})`
+                  : "No data available"}
+              </span>{" "}
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Zip Code:</strong>{" "}
+              <span className="ml-5">{selectedPartner.zip_code}</span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Physical:</strong>
+              <span className="ml-5">
+                {selectedPartner.physical
+                  ? Array.isArray(selectedPartner.physical)
+                    ? selectedPartner.age_range
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.physical})`
+                  : "No data available"}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Mental:</strong>{" "}
+              <span className="ml-5">
+                {" "}
+                {selectedPartner.mental
+                  ? Array.isArray(selectedPartner.mental)
+                    ? selectedPartner.mental
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.mental})`
+                  : "No data available"}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Socal Determinants:</strong>
+              <span className="ml-5">
+                {selectedPartner.social_determinants_of_health
+                  ? Array.isArray(selectedPartner.social_determinants_of_health)
+                    ? selectedPartner.social_determinants_of_health
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.social_determinants_of_health})`
+                  : "No data available"}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Offer Transportation:</strong>
+              <span className="ml-5">
+                {" "}
+                {selectedPartner.offers_transportation}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Emergency Room:</strong>
+              <span className="ml-5"> {selectedPartner.emergency_room}</span>
+            </p>
+            <button
+              onClick={closeModal}
+              className="mt-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              Close
+            </button>
+          </div>
+        ) : (
+          <p>Loading partner details...</p>
+        )}
+      </Modal>
 
 
       <ToastContainer />
     </>
   );
 }
-
-
-
 
 export default Dashboard;

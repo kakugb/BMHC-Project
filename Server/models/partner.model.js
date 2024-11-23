@@ -47,7 +47,7 @@ const partnerSchema = new mongoose.Schema(
       required: true,
     },
     zip_code: {
-      type: [String], 
+      type: String, 
       required: true,
     },
     physical: {
@@ -91,12 +91,12 @@ const partnerSchema = new mongoose.Schema(
       required: true,
     },
     offers_transportation: {
-      type: [String],
+      type: String,
       enum: ["Yes", "No"],
       required: true,
     },
     emergency_room: {
-      type: [String],
+      type: String,
       enum: ["Yes", "No"],
       required: true,
     }

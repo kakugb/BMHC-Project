@@ -187,41 +187,144 @@ function Partner() {
       </div>
 
       <Modal
-  isOpen={isModalOpen}
-  onRequestClose={closeModal}
-  contentLabel="Partner Details"
-  className="modal-content w-[1900px]" 
-  overlayClassName="modal-overlay"
->
-  {selectedPartner ? (
-    <div>
-      <h2 className="text-xl font-bold mb-2">Partner Details</h2>
-     
-      <p className="font-semibold "><strong>Name:</strong> {selectedPartner.name}</p>
-      <p className="font-semibold "><strong>Email:</strong> {selectedPartner.telephone}</p>
-      <p className="font-semibold "><strong>Contact Info:</strong> {selectedPartner.contact}</p>
-      <p className="font-semibold "><strong>Address :</strong> {selectedPartner.address}</p>
-      <p className="font-semibold "><strong>Gender :</strong> {selectedPartner.gender}</p>
-      <p className="font-semibold "><strong>Age Range :</strong> {selectedPartner.age_range}</p>
-      <p className="font-semibold "><strong>Citizenship Status:</strong> {selectedPartner.citizenship_status}</p>
-      <p className="font-semibold "><strong>Insurance:</strong> {selectedPartner.insurance}</p>
-      <p className="font-semibold "><strong>Zip Code:</strong> {selectedPartner.zip_code}</p>
-      <p className="font-semibold "><strong>Physical:</strong> {selectedPartner.physical}</p>
-      <p className="font-semibold "><strong>Mental:</strong> {selectedPartner.mental}</p>
-      <p className="font-semibold "><strong>Socal Determinants:</strong> {selectedPartner.social_determinants_of_health}</p>
-      <p className="font-semibold "><strong>Offer Transportation:</strong> {selectedPartner.offers_transportation}</p>
-      <p className="font-semibold "><strong>Emergency Room:</strong> {selectedPartner.emergency_room}</p>
-      <button
-        onClick={closeModal}
-        className="mt-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Partner Details"
+        className="modal-content w-[1900px]"
+        overlayClassName="modal-overlay"
       >
-        Close
-      </button>
-    </div>
-  ) : (
-    <p>Loading partner details...</p>
-  )}
-</Modal>
+        {selectedPartner ? (
+          <div>
+            <h2 className="text-xl font-bold mb-2">Partner Details</h2>
+
+            <p className="font-semibold mt-2">
+              <strong>Name:</strong>
+              <span className="ml-5"> {selectedPartner.name}</span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Email:</strong>{" "}
+              <span className="ml-5">{selectedPartner.email}</span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Contact Info:</strong>
+              <span className="ml-5"> {selectedPartner.telephone}</span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Address :</strong>{" "}
+              <span className="ml-5">{selectedPartner.address}</span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Gender :</strong>{" "}
+              <span className="ml-5">
+                {selectedPartner.gender
+                  ? Array.isArray(selectedPartner.gender)
+                    ? selectedPartner.gender
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.gender})`
+                  : "No data available"}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Age Range :</strong>{" "}
+              <span className="ml-5">
+                {selectedPartner.age_range
+                  ? Array.isArray(selectedPartner.age_range)
+                    ? selectedPartner.age_range
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.age_range})`
+                  : "No data available"}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Citizenship Status:</strong>{" "}
+              <span className="ml-5">
+                {selectedPartner.citizenship_status
+                  ? Array.isArray(selectedPartner.citizenship_status)
+                    ? selectedPartner.citizenship_status
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.citizenship_status})`
+                  : "No data available"}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Insurance:</strong>
+              <span className="ml-5">
+                {" "}
+                {selectedPartner.insurance
+                  ? Array.isArray(selectedPartner.insurance)
+                    ? selectedPartner.insurance
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.insurance})`
+                  : "No data available"}
+              </span>{" "}
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Zip Code:</strong>{" "}
+              <span className="ml-5">{selectedPartner.zip_code}</span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Physical:</strong>
+              <span className="ml-5">
+                {selectedPartner.physical
+                  ? Array.isArray(selectedPartner.physical)
+                    ? selectedPartner.age_range
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.physical})`
+                  : "No data available"}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Mental:</strong>{" "}
+              <span className="ml-5">
+                {" "}
+                {selectedPartner.mental
+                  ? Array.isArray(selectedPartner.mental)
+                    ? selectedPartner.mental
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.mental})`
+                  : "No data available"}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Socal Determinants:</strong>
+              <span className="ml-5">
+                {selectedPartner.social_determinants_of_health
+                  ? Array.isArray(selectedPartner.social_determinants_of_health)
+                    ? selectedPartner.social_determinants_of_health
+                        .map((status, index) => `(${status})`)
+                        .join("   ")
+                    : `(${selectedPartner.social_determinants_of_health})`
+                  : "No data available"}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Offer Transportation:</strong>
+              <span className="ml-5">
+                {" "}
+                {selectedPartner.offers_transportation}
+              </span>
+            </p>
+            <p className="font-semibold mt-2">
+              <strong>Emergency Room:</strong>
+              <span className="ml-5"> {selectedPartner.emergency_room}</span>
+            </p>
+            <button
+              onClick={closeModal}
+              className="mt-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              Close
+            </button>
+          </div>
+        ) : (
+          <p>Loading partner details...</p>
+        )}
+      </Modal>
 
 
       <ToastContainer />

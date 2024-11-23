@@ -56,24 +56,6 @@ useEffect(() => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const handleChange = (event) => {
     const { value, name } = event.target;
 
@@ -127,7 +109,7 @@ useEffect(() => {
     })
     .catch(error => {
       console.error('Error updating partner:', error.response ? error.response.data : error.message);
-      setError('Error updating partner');  // Optionally show a user-friendly error message
+      setError('Error updating partner');  
     });
   };
   
@@ -137,6 +119,7 @@ useEffect(() => {
     return <p>Loading...</p>;
   }
 
+  console.log(formData)
   return (
     <div className="w-full mt-6 mx-auto ">
       <div className="w-11/12 mx-auto  pb-2 px-4 rounded  border-gray-500 shadow-xl shadow-gray-600 bg-gray-200 ">
@@ -181,7 +164,7 @@ useEffect(() => {
                 onChange={handleChange2}
   
                 class="bg-white border  rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                placeholder="yourmail@provider.com"
+                placeholder="yourmail@gmail.com"
               />{" "}
             </div>{" "}
             <div>
@@ -214,7 +197,24 @@ useEffect(() => {
                 value={formData.address}
               onChange={handleChange2}
                 class="bg-white border  rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                placeholder="(ex. developer)"
+                placeholder="Enter your Address"
+              />{" "}
+            </div>{" "}
+            <div>
+              {" "}
+              <label
+                for="job"
+                class="text-md text-gray-700 block mb-1 font-medium"
+              >
+                Zip Code
+              </label>{" "}
+              <input
+                type="text"
+                name="zip_code"
+                value={formData.zip_code}
+              onChange={handleChange2}
+                class="bg-white border  rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                placeholder="(Enter Zip code in Number)"
               />{" "}
             </div>{" "}
             <div>
@@ -230,7 +230,7 @@ useEffect(() => {
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 onChange={handleChange}
               >
-                <option value="">Select</option>
+                <option value="">Select Gender</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Non-binary">Non-binary</option>
@@ -267,7 +267,7 @@ useEffect(() => {
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 onChange={handleChange}
               >
-                <option value="">Select</option>
+                <option value="">Select Your Citizenship</option>
                 <option value="Citizen">Citizen</option>
                 <option value="Resident">Resident</option>
                 <option value="Non-immigrant (temporary visa)">
@@ -292,7 +292,7 @@ useEffect(() => {
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 onChange={handleChange}
               >
-                <option value="">Select</option>
+                <option value="">Select Insurance</option>
                 <option value="Accepts private insurance">
                   Accepts private insurance
                 </option>
@@ -308,28 +308,7 @@ useEffect(() => {
               </select>
               <p>Selected Insurance: {formData.insurance.join(", ")}</p>
             </div>
-            <div>
-              <label className="text-md text-gray-700 block mb-1 font-medium">
-                Zip Code
-              </label>
-              <select
-                name="zip_code"
-                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                onChange={handleChange}
-              >
-                 <option value="">
-                      Select
-                    </option>
-                {zipCodeOptions.map((zip, id) => (
-                  <>
-                   
-                    <option value={zip} key={id}>{zip}</option>
-                  </>
-                ))}
-              </select>
-
-              <p>Selected Gender: {formData.zip_code.join(", ")}</p>
-            </div>
+           
             <div>
               <label
                 htmlFor="job"
@@ -342,7 +321,7 @@ useEffect(() => {
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 onChange={handleChange}
               >
-                <option value="">Select</option>
+                <option value="">Select physical</option>
                 <option value="Physical Care">Physical Care</option>
                 <option value="Health Screenings">Health Screenings</option>
                 <option value="MAP Enrollment">MAP Enrollment</option>
@@ -364,7 +343,7 @@ useEffect(() => {
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 onChange={handleChange}
               >
-                <option value="">Select</option>
+                <option value="">Select Mental</option>
                 <option value="Counseling">Counseling</option>
                 <option value="Nutrition Education">Nutrition Education</option>
                 <option value="Psychiatric Assessments & Treatment">
@@ -403,7 +382,7 @@ useEffect(() => {
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 onChange={handleChange}
               >
-                <option value="">Select</option>
+                <option value="">Select Social Determinants of Health</option>
                 <option value="Food">Food</option>
                 <option value="Diversion">Diversion</option>
                 <option value="Transportation">Transportation</option>
@@ -430,14 +409,14 @@ useEffect(() => {
               <select
                 name="offers_transportation"
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                onChange={handleChange}
+                onChange={handleChange2}
               >
-                <option value="">Select</option>
+                <option value="">Select offer transportation</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
               </select>
               <p>
-                Selected In: {formData.offers_transportation.join(", ")}
+                Selected In: {formData.offers_transportation}
               </p>
             </div>
             <div>
@@ -447,13 +426,13 @@ useEffect(() => {
               <select
                 name="emergency_room"
                 className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                onChange={handleChange}
+                onChange={handleChange2}
               >
-                <option value="">Select</option>
+                <option value="">Select Emergency Room</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
               </select>
-              <p>Selected In: {formData.emergency_room.join(", ")}</p>
+              <p>Selected In: {formData.emergency_room}</p>
             </div>
           </div>{" "}
           <div class="w-full flex justify-center space-x-4 mt-6 mx-auto py-2">
@@ -462,7 +441,7 @@ useEffect(() => {
               type="submit"
               class="w-md py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50"
             >
-              Update Partner
+              Add Partner
             </button>{" "}
           </div>{" "}
         </form>

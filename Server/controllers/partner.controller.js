@@ -111,7 +111,7 @@ exports.singlePartner = async (req, res) => {
 
     res.status(200).json(partner);
   } catch (error) {
-    console.error('Error fetching partner:', error.message); // Optional: Log error for debugging
+    console.error('Error fetching partner:', error.message); 
     res.status(500).json({ message: 'Error fetching partner', error: error.message });
   }
 };

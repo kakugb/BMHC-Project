@@ -51,10 +51,7 @@ const Dashboard = () => {
     }));
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedPartner(null);
-  };
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -123,7 +120,6 @@ const Dashboard = () => {
     }
   };
 
-  console.log("dfdf", partners);
 
   return (
     <>
