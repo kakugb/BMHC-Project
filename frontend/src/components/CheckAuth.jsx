@@ -22,3 +22,5 @@ function CheckAuth({ isAuthenticated, role, children }) {
 }
 
 export default CheckAuth;
+
+

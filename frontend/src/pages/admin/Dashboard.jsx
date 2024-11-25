@@ -131,32 +131,22 @@ const Dashboard = () => {
   
 
   const handleOptionToggle = (index, option) => {
+    const updatedOptions = dropdowns[index].selectedOptions.includes(option)
+      ? dropdowns[index].selectedOptions.filter((item) => item !== option)
+      : [...dropdowns[index].selectedOptions, option];
+  
     setDropdowns((prev) =>
       prev.map((dropdown, i) =>
-        i === index
-          ? {
-              ...dropdown,
-              selectedOptions: dropdown.selectedOptions.includes(option)
-                ? dropdown.selectedOptions.filter((item) => item !== option)
-                : [...dropdown.selectedOptions, option]
-            }
-          : dropdown
+        i === index ? { ...dropdown, selectedOptions: updatedOptions } : dropdown
       )
     );
-
-    setFormData((prevData) => {
-      const updatedSelectedOptions = dropdowns[index].selectedOptions.includes(
-        option
-      )
-        ? dropdowns[index].selectedOptions.filter((item) => item !== option)
-        : [...dropdowns[index].selectedOptions, option];
-
-      return {
-        ...prevData,
-        [fields[index].key]: updatedSelectedOptions
-      };
-    });
+  
+    setFormData((prev) => ({
+      ...prev,
+      [fields[index].key]: updatedOptions,
+    }));
   };
+  
 
   useEffect(() => {
     const fetchFilteredData = async () => {
@@ -318,71 +308,75 @@ const Dashboard = () => {
           </form>
         </div>
         <div className="w-9/12 mx-4">
-          {currentEntries.length ? (
-            <table className="w-full divide-y divide-gray-200 bg-gray- p-5">
-              <thead>
-                <tr>
-                  <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
-                    Contact Number
-                  </th>
-                  <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
-                    Detail
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody className="bg-white divide-y divide-gray-200">
-                {currentEntries.map((partner) => (
-                  <tr key={partner._id}>
-                    <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
-                      {partner.name}
-                    </td>
-                    <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
-                      {partner.email}
-                    </td>
-                    <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
-                      {partner.telephone}
-                    </td>
-                    <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
-                      <button
-                        className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
-                        onClick={() => fetchPartnerDetails(partner._id)}
-                      >
-                        View Detail
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : null}
-
-          {filteredPartners.length > entriesPerPage && (
-            <div className="flex justify-center py-4">
+  {currentEntries.length ? (
+    <table className="w-full divide-y divide-gray-200 bg-gray- p-5">
+      <thead>
+        <tr>
+          <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+            Name
+          </th>
+          <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+            Email
+          </th>
+          <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+            Contact Number
+          </th>
+          <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+            Detail
+          </th>
+        </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {currentEntries.map((partner) => (
+          <tr key={partner._id}>
+            <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
+              {partner.name}
+            </td>
+            <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
+              {partner.email}
+            </td>
+            <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
+              {partner.telephone}
+            </td>
+            <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
               <button
-                className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
+                className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                onClick={() => fetchPartnerDetails(partner._id)}
               >
-                Previous
+                View Detail
               </button>
-              <span className="px-4 py-2 text-lg">{currentPage}</span>
-              <button
-                className="px-4 py-2 bg-gray-500 text-white rounded-r-md"
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </div>
-          )}
-        </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  ) : (
+    <div className="text-center text-gray-500 py-4">
+      No enteries select by user
+    </div>
+  )}
+
+  {filteredPartners.length > entriesPerPage && (
+    <div className="flex justify-center py-4">
+      <button
+        className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+      >
+        Previous
+      </button>
+      <span className="px-4 py-2 text-lg">{currentPage}</span>
+      <button
+        className="px-4 py-2 bg-gray-500 text-white rounded-r-md"
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+      >
+        Next
+      </button>
+    </div>
+  )}
+</div>
+
       </div>
 
       <Modal
