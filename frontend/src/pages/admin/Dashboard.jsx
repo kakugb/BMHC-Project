@@ -12,7 +12,7 @@ Modal.setAppElement("#root");
 const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState(null);
-
+  const [message, setMessage] = useState(""); // Add this state
   const [filteredPartners, setFilteredPartners] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
@@ -150,6 +150,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchFilteredData = async () => {
+      if (Object.values(formData).every(value => value.length === 0)) {
+        setMessage("No entries selected by user");
+        setFilteredPartners([]);
+        return;
+      }
+  
       try {
         const response = await axios.post(
           "http://localhost:5000/api/partners/filter",
@@ -161,11 +167,10 @@ const Dashboard = () => {
         console.error("Error fetching filtered data:", error);
       }
     };
-
-    if (Object.keys(formData).length > 0) {
-      fetchFilteredData();
-    }
+  
+    fetchFilteredData();
   }, [formData]);
+  
 
   const handleSearchChange = (index, value) => {
     setDropdowns((prev) =>
@@ -174,6 +179,7 @@ const Dashboard = () => {
       )
     );
   };
+  
 
   const fetchPartnerDetails = async (id) => {
     try {
@@ -194,9 +200,8 @@ const Dashboard = () => {
     return <div>{error}</div>;
   }
 
-  const dropdownRefs = useRef([]); // Ref to track each dropdown
+  const dropdownRefs = useRef([]); 
 
-  // Function to handle dropdown toggle
   const toggleDropdown = (index) => {
     setDropdowns((prev) =>
       prev.map((dropdown, i) =>
@@ -205,11 +210,11 @@ const Dashboard = () => {
     );
   };
 
-  // Function to handle clicks outside of the dropdown
+ 
   const handleClickOutside = (event) => {
     dropdownRefs.current.forEach((dropdown, index) => {
       if (dropdown && !dropdown.contains(event.target)) {
-        // Close dropdown if the click is outside
+       
         setDropdowns((prev) =>
           prev.map((dropdown, i) =>
             i === index ? { ...dropdown, isOpen: false } : dropdown
@@ -219,7 +224,7 @@ const Dashboard = () => {
     });
   };
 
-  // Add event listener for clicks outside of the dropdown
+
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -297,14 +302,14 @@ const Dashboard = () => {
               );
             })}
 
-            <div className="flex justify-start">
+            {/* <div className="flex justify-start">
               <button
                 type="submit"
                 className="bg-blue-500 text-white px-6 py-2 rounded"
               >
                 Submit
               </button>
-            </div>
+            </div> */}
           </form>
         </div>
         <div className="w-9/12 mx-4">
@@ -351,7 +356,7 @@ const Dashboard = () => {
       </tbody>
     </table>
   ) : (
-    <div className="text-center text-gray-500 py-4">
+    <div className="text-3xl font-bold text-center text-gray-600 py-4">
       No enteries select by user
     </div>
   )}
@@ -383,136 +388,169 @@ const Dashboard = () => {
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         contentLabel="Partner Details"
-        className="modal-content w-[1900px]"
-        overlayClassName="modal-overlay"
+        className="modal-content"
+        overlayClassName="modal-overlay "
+        style={{ content: { width: "900px" } }}
       >
         {selectedPartner ? (
           <div>
-            <h2 className="text-xl font-bold mb-2">Partner Details</h2>
+            <h2 className="text-xl font-bold mb-2 text-center">
+              Partner Details
+            </h2>
+            <div className="w-full grid grid-cols-3 gap-4">
+              <h1 className="text-xl font-bold">Personal information</h1>
+              <h1 className="text-xl font-bold">Service Provided</h1>
+              <h1 className="text-xl font-bold">Served Information</h1>
+            </div>
+            <div className="w-full grid grid-cols-3 gap-4 mt-5">
+              <p className="font-semibold mt-2">
+                <strong>Name</strong>
+                <h1 className="ml-5"> {selectedPartner.name}</h1>
+              </p>
+              <p className="font-semibold mt-2">
+                <strong>Physical</strong>
+                <h1 className="ml-5">
+                  {selectedPartner.physical
+                    ? Array.isArray(selectedPartner.physical)
+                      ? selectedPartner.age_range
+                          .map((status, index) => `(${status})`)
+                          .join("   ")
+                      : `(${selectedPartner.physical})`
+                    : "No data available"}
+                </h1>
+              </p>
 
-            <p className="font-semibold mt-2">
-              <strong>Name:</strong>
-              <span className="ml-5"> {selectedPartner.name}</span>
-            </p>
-            <p className="font-semibold mt-2">
-              <strong>Email:</strong>{" "}
-              <span className="ml-5">{selectedPartner.email}</span>
-            </p>
-            <p className="font-semibold mt-2">
-              <strong>Contact Info:</strong>
-              <span className="ml-5"> {selectedPartner.telephone}</span>
-            </p>
-            <p className="font-semibold mt-2">
-              <strong>Address :</strong>{" "}
-              <span className="ml-5">{selectedPartner.address}</span>
-            </p>
-            <p className="font-semibold mt-2">
-              <strong>Gender :</strong>{" "}
-              <span className="ml-5">
-                {selectedPartner.gender
-                  ? Array.isArray(selectedPartner.gender)
-                    ? selectedPartner.gender
-                        .map((status, index) => `(${status})`)
-                        .join("   ")
-                    : `(${selectedPartner.gender})`
-                  : "No data available"}
-              </span>
-            </p>
-            <p className="font-semibold mt-2">
-              <strong>Age Range :</strong>{" "}
-              <span className="ml-5">
-                {selectedPartner.age_range
-                  ? Array.isArray(selectedPartner.age_range)
-                    ? selectedPartner.age_range
-                        .map((status, index) => `(${status})`)
-                        .join("   ")
-                    : `(${selectedPartner.age_range})`
-                  : "No data available"}
-              </span>
-            </p>
-            <p className="font-semibold mt-2">
-              <strong>Citizenship Status:</strong>{" "}
-              <span className="ml-5">
-                {selectedPartner.citizenship_status
-                  ? Array.isArray(selectedPartner.citizenship_status)
-                    ? selectedPartner.citizenship_status
-                        .map((status, index) => `(${status})`)
-                        .join("   ")
-                    : `(${selectedPartner.citizenship_status})`
-                  : "No data available"}
-              </span>
-            </p>
-            <p className="font-semibold mt-2">
-              <strong>Insurance:</strong>
-              <span className="ml-5">
-                {" "}
-                {selectedPartner.insurance
-                  ? Array.isArray(selectedPartner.insurance)
-                    ? selectedPartner.insurance
-                        .map((status, index) => `(${status})`)
-                        .join("   ")
-                    : `(${selectedPartner.insurance})`
-                  : "No data available"}
-              </span>{" "}
-            </p>
-            <p className="font-semibold mt-2">
-              <strong>Zip Code:</strong>{" "}
-              <span className="ml-5">{selectedPartner.zip_code}</span>
-            </p>
-            <p className="font-semibold mt-2">
-              <strong>Physical:</strong>
-              <span className="ml-5">
-                {selectedPartner.physical
-                  ? Array.isArray(selectedPartner.physical)
-                    ? selectedPartner.age_range
-                        .map((status, index) => `(${status})`)
-                        .join("   ")
-                    : `(${selectedPartner.physical})`
-                  : "No data available"}
-              </span>
-            </p>
-            <p className="font-semibold mt-2">
-              <strong>Mental:</strong>{" "}
-              <span className="ml-5">
-                {" "}
-                {selectedPartner.mental
-                  ? Array.isArray(selectedPartner.mental)
-                    ? selectedPartner.mental
-                        .map((status, index) => `(${status})`)
-                        .join("   ")
-                    : `(${selectedPartner.mental})`
-                  : "No data available"}
-              </span>
-            </p>
-            <p className="font-semibold mt-2">
-              <strong>Socal Determinants:</strong>
-              <span className="ml-5">
-                {selectedPartner.social_determinants_of_health
-                  ? Array.isArray(selectedPartner.social_determinants_of_health)
-                    ? selectedPartner.social_determinants_of_health
-                        .map((status, index) => `(${status})`)
-                        .join("   ")
-                    : `(${selectedPartner.social_determinants_of_health})`
-                  : "No data available"}
-              </span>
-            </p>
-            <p className="font-semibold mt-2">
-              <strong>Offer Transportation:</strong>
-              <span className="ml-5">
-                {" "}
-                {selectedPartner.offers_transportation}
-              </span>
-            </p>
-            <p className="font-semibold mt-2">
-              <strong>Emergency Room:</strong>
-              <span className="ml-5"> {selectedPartner.emergency_room}</span>
-            </p>
+              <p className="font-semibold mt-2">
+                <strong>Age Range(s) Served </strong>{" "}
+                <h1 className="ml-5">
+                  {selectedPartner.age_range
+                    ? Array.isArray(selectedPartner.age_range)
+                      ? selectedPartner.age_range
+                          .map((status, index) => `(${status})`)
+                          .join("   ")
+                      : `(${selectedPartner.age_range})`
+                    : "No data available"}
+                </h1>
+              </p>
+            </div>
+
+            <div className="w-full grid grid-cols-3 gap-4 mt-3">
+              <p className="font-semibold mt-2">
+                <strong>Email Address</strong>{" "}
+                <h1 className="ml-5">{selectedPartner.email}</h1>
+              </p>
+
+              <p className="font-semibold mt-2">
+                <strong>Mental</strong>{" "}
+                <h1 className="ml-5">
+                  {" "}
+                  {selectedPartner.mental
+                    ? Array.isArray(selectedPartner.mental)
+                      ? selectedPartner.mental
+                          .map((status, index) => `(${status})`)
+                          .join("   ")
+                      : `(${selectedPartner.mental})`
+                    : "No data available"}
+                </h1>
+              </p>
+
+              <p className="font-semibold mt-2">
+                <strong>Citizenship Status(es) Served </strong>{" "}
+                <h1 className="ml-5">
+                  {selectedPartner.citizenship_status
+                    ? Array.isArray(selectedPartner.citizenship_status)
+                      ? selectedPartner.citizenship_status
+                          .map((status, index) => `(${status})`)
+                          .join("   ")
+                      : `(${selectedPartner.citizenship_status})`
+                    : "No data available"}
+                </h1>
+              </p>
+            </div>
+
+            <div className="w-full grid grid-cols-3 gap-4 mt-3">
+              <p className="font-semibold mt-2">
+                <strong>Address </strong>{" "}
+                <h1 className="ml-5">{selectedPartner.address}</h1>
+              </p>
+
+              <p className="font-semibold mt-2">
+                <strong>Socal Determinants of Health</strong>
+                <h1 className="ml-5">
+                  {selectedPartner.social_determinants_of_health
+                    ? Array.isArray(
+                        selectedPartner.social_determinants_of_health
+                      )
+                      ? selectedPartner.social_determinants_of_health
+                          .map((status, index) => `(${status})`)
+                          .join("   ")
+                      : `(${selectedPartner.social_determinants_of_health})`
+                    : "No data available"}
+                </h1>
+              </p>
+
+              <p className="font-semibold mt-2">
+                <strong>Accepted Insurance status(es)</strong>
+                <h1 className="ml-5">
+                  {" "}
+                  {selectedPartner.insurance
+                    ? Array.isArray(selectedPartner.insurance)
+                      ? selectedPartner.insurance
+                          .map((status, index) => `(${status})`)
+                          .join("   ")
+                      : `(${selectedPartner.insurance})`
+                    : "No data available"}
+                </h1>{" "}
+              </p>
+            </div>
+
+            <div className="w-full grid grid-cols-3 gap-4 mt-3">
+              <p className="font-semibold mt-2">
+                <strong>Contact Number</strong>
+                <h1 className="ml-5"> {selectedPartner.telephone}</h1>
+              </p>
+
+              <p className="font-semibold mt-2">
+                <strong>Offer Transportation</strong>
+                <h1 className="ml-5">
+                  {" "}
+                  {selectedPartner.offers_transportation}
+                </h1>
+              </p>
+
+              <p className="font-semibold mt-2">
+                <strong>Gender </strong>{" "}
+                <h1 className="ml-5">
+                  {selectedPartner.gender
+                    ? Array.isArray(selectedPartner.gender)
+                      ? selectedPartner.gender
+                          .map((status, index) => `(${status})`)
+                          .join("   ")
+                      : `(${selectedPartner.gender})`
+                    : "No data available"}
+                </h1>
+              </p>
+            </div>
+            <div className="w-full grid grid-cols-3 gap-4">
+              <p className="font-semibold mt-2">
+                <strong>Zip Code</strong>{" "}
+                <h1 className="ml-5">{selectedPartner.zip_code}</h1>
+              </p>
+
+              <p className="font-semibold mt-2">
+                <strong>Emergency Room</strong>
+                <h1 className="ml-5"> {selectedPartner.emergency_room}</h1>
+              </p>
+            </div>
+
+            <div className="w-full mt-4">
             <button
               onClick={closeModal}
-              className="mt-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+              className="flex mx-auto mt-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 "
             >
               Close
             </button>
+            </div>
           </div>
         ) : (
           <p>Loading partner details...</p>

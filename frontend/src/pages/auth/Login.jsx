@@ -78,7 +78,7 @@ function Login() {
             Login
           </button>
         </form>
-        <p className="text-md font-semibold text-end pb-4 pr-4">Are you want to regiset ?<Link to='/register' className="text-blue-600 hover:underline hover:underline-offset-4"> Register Me</Link></p>
+       
       </div>
     </div>
   );

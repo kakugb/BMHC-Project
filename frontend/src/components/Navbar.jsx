@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import logo from '../assests/BMHC-R-1.jpg'
+import logo from '../assests/BMHC-R-1.png'
 const Navbar = ({ role, user }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const roles = localStorage.getItem("role");
@@ -12,7 +12,7 @@ const Navbar = ({ role, user }) => {
   };
 
   return (
-    <nav className="bg-gray-200 border-gray-200 dark:bg-gray-900">
+    <nav className="bg-gray-300 border-gray-200 dark:bg-gray-900">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
        
           <Link to="/admin/dashboard">

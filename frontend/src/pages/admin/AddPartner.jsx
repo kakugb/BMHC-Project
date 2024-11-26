@@ -1,10 +1,4 @@
 import React, { useState } from "react";
-import {
-  zipCodeOptions,
-  physicalServices,
-  mentalServices,
-  socialServices
-} from "../../utils/data.js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
@@ -12,10 +6,10 @@ import { useNavigate } from "react-router-dom";
 function AddPartner() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: [],
-    telephone: [],
-    email: [],
-    address: [],
+    name: "",
+    telephone: "",
+    email: "",
+    address: "",
     gender: [],
     age_range: [],
     citizenship_status: [],
@@ -28,33 +22,33 @@ function AddPartner() {
     emergency_room: []
   });
 
-  const handleChange = (event) => {
-    const { value, name } = event.target;
+  // const handleChange = event => {
+  //   const { value, name } = event.target;
 
-    setFormData((prevformData) => {
-      const currentOptions = prevformData[name] || [];
+  //   setFormData(prevformData => {
+  //     const currentOptions = prevformData[name] || [];
 
-      if (currentOptions.includes(value)) {
-        return {
-          ...prevformData,
-          [name]: currentOptions.filter((option) => option !== value)
-        };
-      } else {
-        return {
-          ...prevformData,
-          [name]: [...currentOptions, value]
-        };
-      }
-    });
-  };
-  const handleChange2 = (event) => {
+  //     if (currentOptions.includes(value)) {
+  //       return {
+  //         ...prevformData,
+  //         [name]: currentOptions.filter(option => option !== value)
+  //       };
+  //     } else {
+  //       return {
+  //         ...prevformData,
+  //         [name]: [...currentOptions, value]
+  //       };
+  //     }
+  //   });
+  // };
+  const handleChange2 = event => {
     setFormData({
       ...formData,
       [event.target.name]: event.target.value
     });
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async event => {
     event.preventDefault();
     const token =
       localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -88,39 +82,51 @@ function AddPartner() {
   const [isPhysicalOpen, setIsPhysicalOpen] = useState(false);
   const [isMentalOpen, setIsMentalOpen] = useState(false);
   const [isSocialOpen, setIsSocialOpen] = useState(false);
-  const toggleDropdown = (field) => {
+  const [isEmergencyOpen, setIsEmergencyOpen] = useState(false);
+  const [isTransportationOpen, setIsTransportationOpen] = useState(false);
+  const toggleDropdown = field => {
     if (field === "gender") {
-      setIsGenderOpen((prev) => !prev);
+      setIsGenderOpen(prev => !prev);
     } else if (field === "age_range") {
-      setIsAgeRangeOpen((prev) => !prev);
+      setIsAgeRangeOpen(prev => !prev);
     } else if (field === "citizenship_status") {
-      setIsCitizenshipOpen((prev) => !prev);
+      setIsCitizenshipOpen(prev => !prev);
     } else if (field === "insurance") {
-      setIsInsuranceOpen((prev) => !prev);
+      setIsInsuranceOpen(prev => !prev);
     } else if (field === "physical") {
-      setIsPhysicalOpen((prev) => !prev);
+      setIsPhysicalOpen(prev => !prev);
     } else if (field === "mental") {
-      setIsMentalOpen((prev) => !prev);
+      setIsMentalOpen(prev => !prev);
     } else if (field === "social_determinants_of_health") {
-      setIsSocialOpen((prev) => !prev);
+      setIsSocialOpen(prev => !prev);
+    }else if (field === "emergency_room") {
+      setIsEmergencyOpen(!isEmergencyOpen);
+    } else if (field === "offers_transportation") {
+      setIsTransportationOpen(!isTransportationOpen);
     }
   };
 
   const handleCheckboxChange = (field, event) => {
     const { value, checked } = event.target;
-    setFormData((prevState) => {
+    setFormData(prevState => {
       const updatedField = prevState[field];
       if (checked) {
         return { ...prevState, [field]: [...updatedField, value] };
       } else {
         return {
           ...prevState,
-          [field]: updatedField.filter((item) => item !== value)
+          [field]: updatedField.filter(item => item !== value)
         };
       }
     });
   };
-
+  const handleRadioChange = (field, e) => {
+    const { value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [field]: value
+    }));
+  };
   return (
     <div className="w-full mt-6 mx-auto ">
       <div className="w-11/12 mx-auto  pb-2 px-4 rounded  border-gray-500 shadow-xl shadow-gray-600 bg-gray-200 ">
@@ -139,12 +145,9 @@ function AddPartner() {
           </div>
         </div>
         <form onSubmit={handleSubmit}>
-          {" "}
-          <div class="mt-8 grid lg:grid-cols-3 gap-4">
-            {" "}
-            <div>
-              {" "}
-              <label
+          {" "}<div class="mt-8 grid lg:grid-cols-3 gap-4">
+            {" "}<div>
+              {" "}<label
                 for="name"
                 class="text-md text-gray-700 block mb-1 font-medium"
               >
@@ -160,10 +163,7 @@ function AddPartner() {
               />{" "}
             </div>{" "}
             <div>
-              <label
-                htmlFor="physical"
-                className="text-md text-gray-700 block mb-1 font-medium"
-              >
+              <label className="text-md text-gray-700 block mb-1 font-medium">
                 Physical
               </label>
               <div className="relative">
@@ -175,13 +175,13 @@ function AddPartner() {
                     ? formData.physical.join(", ")
                     : "Select Physical"}
                 </div>
-                {isPhysicalOpen && (
+                {isPhysicalOpen &&
                   <div className="absolute bg-white border border-gray-400 rounded mt-1 w-full z-10">
                     <label className="block px-4 py-2 cursor-pointer">
                       <input
                         type="checkbox"
                         value="Physical Care"
-                        onChange={(e) => handleCheckboxChange("physical", e)}
+                        onChange={e => handleCheckboxChange("physical", e)}
                         checked={formData.physical.includes("Physical Care")}
                         className="mr-2"
                       />
@@ -191,7 +191,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Health Screenings"
-                        onChange={(e) => handleCheckboxChange("physical", e)}
+                        onChange={e => handleCheckboxChange("physical", e)}
                         checked={formData.physical.includes(
                           "Health Screenings"
                         )}
@@ -203,7 +203,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="MAP Enrollment"
-                        onChange={(e) => handleCheckboxChange("physical", e)}
+                        onChange={e => handleCheckboxChange("physical", e)}
                         checked={formData.physical.includes("MAP Enrollment")}
                         className="mr-2"
                       />
@@ -213,7 +213,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Public Funded Health Insurance"
-                        onChange={(e) => handleCheckboxChange("physical", e)}
+                        onChange={e => handleCheckboxChange("physical", e)}
                         checked={formData.physical.includes(
                           "Public Funded Health Insurance"
                         )}
@@ -221,8 +221,7 @@ function AddPartner() {
                       />
                       Public Funded Health Insurance
                     </label>
-                  </div>
-                )}
+                  </div>}
               </div>
               {/* <p className="mt-1">
                 Selected Physical: {formData.physical.join(", ")}
@@ -233,7 +232,7 @@ function AddPartner() {
                 htmlFor="age_range"
                 className="text-md text-gray-700 block mb-1 font-medium"
               >
-                Age Range
+                Age Range(s) Served
               </label>
               <div className="relative">
                 <div
@@ -244,13 +243,13 @@ function AddPartner() {
                     ? formData.age_range.join(", ")
                     : "Select Age Range"}
                 </div>
-                {isAgeRangeOpen && (
+                {isAgeRangeOpen &&
                   <div className="absolute bg-white border border-gray-400 rounded mt-1 w-full z-10">
                     <label className="block px-4 py-2 cursor-pointer">
                       <input
                         type="checkbox"
                         value="Minors (under 18)"
-                        onChange={(e) => handleCheckboxChange("age_range", e)}
+                        onChange={e => handleCheckboxChange("age_range", e)}
                         checked={formData.age_range.includes(
                           "Minors (under 18)"
                         )}
@@ -262,7 +261,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Adults (18-64)"
-                        onChange={(e) => handleCheckboxChange("age_range", e)}
+                        onChange={e => handleCheckboxChange("age_range", e)}
                         checked={formData.age_range.includes("Adults (18-64)")}
                         className="mr-2"
                       />
@@ -272,7 +271,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Seniors (65 and over)"
-                        onChange={(e) => handleCheckboxChange("age_range", e)}
+                        onChange={e => handleCheckboxChange("age_range", e)}
                         checked={formData.age_range.includes(
                           "Seniors (65 and over)"
                         )}
@@ -280,16 +279,14 @@ function AddPartner() {
                       />
                       Seniors (65 and over)
                     </label>
-                  </div>
-                )}
+                  </div>}
               </div>
               {/* <p className="mt-1">
                 Selected Age Range(s): {formData.age_range.join(", ")}
               </p> */}
             </div>
             <div>
-              {" "}
-              <label
+              {" "}<label
                 for="email"
                 class="text-md text-gray-700 block mb-1 font-medium"
               >
@@ -321,13 +318,13 @@ function AddPartner() {
                     ? formData.mental.join(", ")
                     : "Select Mental"}
                 </div>
-                {isMentalOpen && (
+                {isMentalOpen &&
                   <div className="absolute bg-white border border-gray-400 rounded mt-1 w-full z-10">
                     <label className="block px-4 py-2 cursor-pointer">
                       <input
                         type="checkbox"
                         value="Counseling"
-                        onChange={(e) => handleCheckboxChange("mental", e)}
+                        onChange={e => handleCheckboxChange("mental", e)}
                         checked={formData.mental.includes("Counseling")}
                         className="mr-2"
                       />
@@ -337,7 +334,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Nutrition Education"
-                        onChange={(e) => handleCheckboxChange("mental", e)}
+                        onChange={e => handleCheckboxChange("mental", e)}
                         checked={formData.mental.includes(
                           "Nutrition Education"
                         )}
@@ -349,7 +346,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Psychiatric Assessments & Treatment"
-                        onChange={(e) => handleCheckboxChange("mental", e)}
+                        onChange={e => handleCheckboxChange("mental", e)}
                         checked={formData.mental.includes(
                           "Psychiatric Assessments & Treatment"
                         )}
@@ -361,7 +358,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Trauma & Post-Traumatic Stress"
-                        onChange={(e) => handleCheckboxChange("mental", e)}
+                        onChange={e => handleCheckboxChange("mental", e)}
                         checked={formData.mental.includes(
                           "Trauma & Post-Traumatic Stress"
                         )}
@@ -373,7 +370,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Grief Assessments & Processing"
-                        onChange={(e) => handleCheckboxChange("mental", e)}
+                        onChange={e => handleCheckboxChange("mental", e)}
                         checked={formData.mental.includes(
                           "Grief Assessments & Processing"
                         )}
@@ -385,7 +382,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Therapeutic Services for Severe Mental Illnesses"
-                        onChange={(e) => handleCheckboxChange("mental", e)}
+                        onChange={e => handleCheckboxChange("mental", e)}
                         checked={formData.mental.includes(
                           "Therapeutic Services for Severe Mental Illnesses"
                         )}
@@ -397,7 +394,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Counseling & Life Coaching Services"
-                        onChange={(e) => handleCheckboxChange("mental", e)}
+                        onChange={e => handleCheckboxChange("mental", e)}
                         checked={formData.mental.includes(
                           "Counseling & Life Coaching Services"
                         )}
@@ -409,7 +406,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Medication Management"
-                        onChange={(e) => handleCheckboxChange("mental", e)}
+                        onChange={e => handleCheckboxChange("mental", e)}
                         checked={formData.mental.includes(
                           "Medication Management"
                         )}
@@ -421,7 +418,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Substance Use Disorders"
-                        onChange={(e) => handleCheckboxChange("mental", e)}
+                        onChange={e => handleCheckboxChange("mental", e)}
                         checked={formData.mental.includes(
                           "Substance Use Disorders"
                         )}
@@ -433,7 +430,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Coping Skills Improvement"
-                        onChange={(e) => handleCheckboxChange("mental", e)}
+                        onChange={e => handleCheckboxChange("mental", e)}
                         checked={formData.mental.includes(
                           "Coping Skills Improvement"
                         )}
@@ -441,8 +438,7 @@ function AddPartner() {
                       />
                       Coping Skills Improvement
                     </label>
-                  </div>
-                )}
+                  </div>}
               </div>
               {/* <p className="mt-2">
                 Selected Mental: {formData.mental.join(", ")}
@@ -453,7 +449,7 @@ function AddPartner() {
                 htmlFor="citizenship_status"
                 className="text-md text-gray-700 block mb-1 font-medium"
               >
-                Citizenship Status
+                Citizenship Status(es) Served
               </label>
               <div className="relative">
                 <div
@@ -464,15 +460,14 @@ function AddPartner() {
                     ? formData.citizenship_status.join(", ")
                     : "Select Citizenship Status"}
                 </div>
-                {isCitizenshipOpen && (
+                {isCitizenshipOpen &&
                   <div className="absolute bg-white border border-gray-400 rounded mt-1 w-full z-10">
                     <label className="block px-4 py-2 cursor-pointer">
                       <input
                         type="checkbox"
                         value="Citizen"
-                        onChange={(e) =>
-                          handleCheckboxChange("citizenship_status", e)
-                        }
+                        onChange={e =>
+                          handleCheckboxChange("citizenship_status", e)}
                         checked={formData.citizenship_status.includes(
                           "Citizen"
                         )}
@@ -484,9 +479,8 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Resident"
-                        onChange={(e) =>
-                          handleCheckboxChange("citizenship_status", e)
-                        }
+                        onChange={e =>
+                          handleCheckboxChange("citizenship_status", e)}
                         checked={formData.citizenship_status.includes(
                           "Resident"
                         )}
@@ -498,9 +492,8 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Non-immigrant (temporary visa)"
-                        onChange={(e) =>
-                          handleCheckboxChange("citizenship_status", e)
-                        }
+                        onChange={e =>
+                          handleCheckboxChange("citizenship_status", e)}
                         checked={formData.citizenship_status.includes(
                           "Non-immigrant (temporary visa)"
                         )}
@@ -512,9 +505,8 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Undocumented"
-                        onChange={(e) =>
-                          handleCheckboxChange("citizenship_status", e)
-                        }
+                        onChange={e =>
+                          handleCheckboxChange("citizenship_status", e)}
                         checked={formData.citizenship_status.includes(
                           "Undocumented"
                         )}
@@ -522,8 +514,7 @@ function AddPartner() {
                       />
                       Undocumented
                     </label>
-                  </div>
-                )}
+                  </div>}
               </div>
               {/* <p className="mt-2">
                 Selected Citizenship Status:{" "}
@@ -531,12 +522,8 @@ function AddPartner() {
               </p> */}
             </div>
             <div>
-              {" "}
-              <label
-                for="job"
-                class="text-md text-gray-700 block mb-1 font-medium"
-              >
-                address
+              {" "}<label class="text-md text-gray-700 block mb-1 font-medium">
+                Address
               </label>{" "}
               <input
                 type="text"
@@ -558,25 +545,23 @@ function AddPartner() {
                 <div
                   className="bg-white border rounded py-1 px-4 w-full cursor-pointer"
                   onClick={() =>
-                    toggleDropdown("social_determinants_of_health")
-                  }
+                    toggleDropdown("social_determinants_of_health")}
                 >
                   {formData.social_determinants_of_health.length > 0
                     ? formData.social_determinants_of_health.join(", ")
                     : "Select Social Determinants of Health"}
                 </div>
-                {isSocialOpen && (
+                {isSocialOpen &&
                   <div className="absolute bg-white border border-gray-400 rounded mt-1 w-full z-10">
                     <label className="block px-4 py-2 cursor-pointer">
                       <input
                         type="checkbox"
                         value="Food"
-                        onChange={(e) =>
+                        onChange={e =>
                           handleCheckboxChange(
                             "social_determinants_of_health",
                             e
-                          )
-                        }
+                          )}
                         checked={formData.social_determinants_of_health.includes(
                           "Food"
                         )}
@@ -588,12 +573,11 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Diversion"
-                        onChange={(e) =>
+                        onChange={e =>
                           handleCheckboxChange(
                             "social_determinants_of_health",
                             e
-                          )
-                        }
+                          )}
                         checked={formData.social_determinants_of_health.includes(
                           "Diversion"
                         )}
@@ -605,12 +589,11 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Transportation"
-                        onChange={(e) =>
+                        onChange={e =>
                           handleCheckboxChange(
                             "social_determinants_of_health",
                             e
-                          )
-                        }
+                          )}
                         checked={formData.social_determinants_of_health.includes(
                           "Transportation"
                         )}
@@ -622,12 +605,11 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Workforce (Career Skills)"
-                        onChange={(e) =>
+                        onChange={e =>
                           handleCheckboxChange(
                             "social_determinants_of_health",
                             e
-                          )
-                        }
+                          )}
                         checked={formData.social_determinants_of_health.includes(
                           "Workforce (Career Skills)"
                         )}
@@ -639,12 +621,11 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Training"
-                        onChange={(e) =>
+                        onChange={e =>
                           handleCheckboxChange(
                             "social_determinants_of_health",
                             e
-                          )
-                        }
+                          )}
                         checked={formData.social_determinants_of_health.includes(
                           "Training"
                         )}
@@ -656,12 +637,11 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="PSH Supportive Services"
-                        onChange={(e) =>
+                        onChange={e =>
                           handleCheckboxChange(
                             "social_determinants_of_health",
                             e
-                          )
-                        }
+                          )}
                         checked={formData.social_determinants_of_health.includes(
                           "PSH Supportive Services"
                         )}
@@ -673,12 +653,11 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Respite Medical Care Support"
-                        onChange={(e) =>
+                        onChange={e =>
                           handleCheckboxChange(
                             "social_determinants_of_health",
                             e
-                          )
-                        }
+                          )}
                         checked={formData.social_determinants_of_health.includes(
                           "Respite Medical Care Support"
                         )}
@@ -690,12 +669,11 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Reentry Support Services"
-                        onChange={(e) =>
+                        onChange={e =>
                           handleCheckboxChange(
                             "social_determinants_of_health",
                             e
-                          )
-                        }
+                          )}
                         checked={formData.social_determinants_of_health.includes(
                           "Reentry Support Services"
                         )}
@@ -703,8 +681,7 @@ function AddPartner() {
                       />
                       Reentry Support Services
                     </label>
-                  </div>
-                )}
+                  </div>}
               </div>
               {/* <p className="mt-2">
                 Selected Social Determinants of Health:{" "}
@@ -712,11 +689,8 @@ function AddPartner() {
               </p> */}
             </div>
             <div>
-              <label
-                htmlFor="insurance"
-                className="text-md text-gray-700 block mb-1 font-medium"
-              >
-                Insurance
+              <label className="text-md text-gray-700 block mb-1 font-medium">
+                Accepted Insurance status(es)
               </label>
               <div className="relative">
                 <div
@@ -727,13 +701,13 @@ function AddPartner() {
                     ? formData.insurance.join(", ")
                     : "Select Insurance"}
                 </div>
-                {isInsuranceOpen && (
+                {isInsuranceOpen &&
                   <div className="absolute bg-white border border-gray-400 rounded mt-1 w-full z-10">
                     <label className="block px-4 py-2 cursor-pointer">
                       <input
                         type="checkbox"
                         value="Accepts private insurance"
-                        onChange={(e) => handleCheckboxChange("insurance", e)}
+                        onChange={e => handleCheckboxChange("insurance", e)}
                         checked={formData.insurance.includes(
                           "Accepts private insurance"
                         )}
@@ -745,7 +719,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Accepts Medicare"
-                        onChange={(e) => handleCheckboxChange("insurance", e)}
+                        onChange={e => handleCheckboxChange("insurance", e)}
                         checked={formData.insurance.includes(
                           "Accepts Medicare"
                         )}
@@ -757,7 +731,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Accepts Medicaid"
-                        onChange={(e) => handleCheckboxChange("insurance", e)}
+                        onChange={e => handleCheckboxChange("insurance", e)}
                         checked={formData.insurance.includes(
                           "Accepts Medicaid"
                         )}
@@ -769,7 +743,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Accepts MAP"
-                        onChange={(e) => handleCheckboxChange("insurance", e)}
+                        onChange={e => handleCheckboxChange("insurance", e)}
                         checked={formData.insurance.includes("Accepts MAP")}
                         className="mr-2"
                       />
@@ -779,7 +753,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Accepts Ryan White Program"
-                        onChange={(e) => handleCheckboxChange("insurance", e)}
+                        onChange={e => handleCheckboxChange("insurance", e)}
                         checked={formData.insurance.includes(
                           "Accepts Ryan White Program"
                         )}
@@ -791,7 +765,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Accepts patients/clients without insurance"
-                        onChange={(e) => handleCheckboxChange("insurance", e)}
+                        onChange={e => handleCheckboxChange("insurance", e)}
                         checked={formData.insurance.includes(
                           "Accepts patients/clients without insurance"
                         )}
@@ -799,16 +773,14 @@ function AddPartner() {
                       />
                       Accepts patients/clients without insurance
                     </label>
-                  </div>
-                )}
+                  </div>}
               </div>
               {/* <p className="mt-2">
                 Selected Insurance: {formData.insurance.join(", ")}
               </p> */}
             </div>
             <div>
-              {" "}
-              <label class="text-md text-gray-700 block mb-1 font-medium">
+              {" "}<label class="text-md text-gray-700 block mb-1 font-medium">
                 Contact Number
               </label>{" "}
               <input
@@ -824,16 +796,43 @@ function AddPartner() {
               <label className="text-md text-gray-700 block mb-1 font-medium">
                 Offer Transportation
               </label>
-              <select
-                name="offers_transportation"
-                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                onChange={handleChange2}
-              >
-                <option value="">Select offer transportation</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-              <p>Selected In: {formData.offers_transportation}</p>
+              <div className="relative">
+                <div
+                  className="bg-white border rounded py-4 px-4 w-full cursor-pointer"
+                  onClick={() => toggleDropdown("offers_transportation")}
+                >
+                  {formData.offers_transportation
+                    ? formData.offers_transportation
+                    : <span className="text-gray-400">
+                        Select Offer Transportation
+                      </span>}
+                </div>
+                {isTransportationOpen &&
+                  <div className="absolute bg-white border border-gray-400 rounded mt-1 w-full z-10">
+                    <label className="block px-4 py-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        value="Yes"
+                        onChange={e =>
+                          handleRadioChange("offers_transportation", e)}
+                        checked={formData.offers_transportation === "Yes"}
+                        className="mr-2"
+                      />
+                      Yes
+                    </label>
+                    <label className="block px-4 py-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        value="No"
+                        onChange={e =>
+                          handleRadioChange("offers_transportation", e)}
+                        checked={formData.offers_transportation === "No"}
+                        className="mr-2"
+                      />
+                      No
+                    </label>
+                  </div>}
+              </div>
             </div>
             <div>
               <label
@@ -851,13 +850,13 @@ function AddPartner() {
                     ? formData.gender.join(", ")
                     : "Select Gender"}
                 </div>
-                {isGenderOpen && (
+                {isGenderOpen &&
                   <div className="absolute bg-white border border-gray-400 rounded mt-1 w-full z-10">
                     <label className="block px-4 py-2 cursor-pointer">
                       <input
                         type="checkbox"
                         value="Male"
-                        onChange={(e) => handleCheckboxChange("gender", e)}
+                        onChange={e => handleCheckboxChange("gender", e)}
                         checked={formData.gender.includes("Male")}
                         className="mr-2"
                       />
@@ -867,7 +866,7 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Female"
-                        onChange={(e) => handleCheckboxChange("gender", e)}
+                        onChange={e => handleCheckboxChange("gender", e)}
                         checked={formData.gender.includes("Female")}
                         className="mr-2"
                       />
@@ -877,56 +876,78 @@ function AddPartner() {
                       <input
                         type="checkbox"
                         value="Non-binary"
-                        onChange={(e) => handleCheckboxChange("gender", e)}
+                        onChange={e => handleCheckboxChange("gender", e)}
                         checked={formData.gender.includes("Non-binary")}
                         className="mr-2"
                       />
                       Non-binary
                     </label>
-                  </div>
-                )}
+                  </div>}
               </div>
               {/* <p className="mt-2">
                 Selected Gender(s): {formData.gender.join(", ")}
               </p> */}
             </div>
             <div>
-              {" "}
-              <label
-                for="job"
-                class="text-md text-gray-700 block mb-1 font-medium"
-              >
+              <label className="text-md text-gray-700 block mb-1 font-medium">
                 Zip Code
-              </label>{" "}
+              </label>
               <input
                 type="text"
                 name="zip_code"
                 value={formData.zip_code}
-                onChange={handleChange2}
-                class="bg-white border  rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                placeholder="(Enter Zip code in Number)"
-              />{" "}
-            </div>{" "}
+                onChange={e => {
+                  const value = e.target.value;
+                  if (/^\d*$/.test(value)) {
+                    handleChange2(e);
+                  }
+                }}
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                placeholder="Enter Zip code in Number"
+              />
+            </div>
             {/* Emergency Room Dropdown */}
             <div>
               <label className="text-md text-gray-700 block mb-1 font-medium">
                 Emergency Room
               </label>
-              <select
-                name="emergency_room"
-                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                onChange={handleChange2}
-              >
-                <option value="">Select Emergency Room</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-              {/* <p>Selected In: {formData.emergency_room}</p> */}
+              <div className="relative">
+                <div
+                  className="bg-white border rounded py-4 px-4 w-full cursor-pointer"
+                  onClick={() => toggleDropdown("emergency_room")}
+                >
+                  {formData.emergency_room
+                    ? formData.emergency_room
+                    : "Select Emergency Room"}
+                </div>
+                {isEmergencyOpen &&
+                  <div className="absolute bg-white border border-gray-400 rounded mt-1 w-full z-10">
+                    <label className="block px-4 py-1 cursor-pointer">
+                      <input
+                        type="radio"
+                        value="Yes"
+                        onChange={e => handleRadioChange("emergency_room", e)}
+                        checked={formData.emergency_room === "Yes"}
+                        className="mr-2"
+                      />
+                      Yes
+                    </label>
+                    <label className="block px-4 py-1 cursor-pointer">
+                      <input
+                        type="radio"
+                        value="No"
+                        onChange={e => handleRadioChange("emergency_room", e)}
+                        checked={formData.emergency_room === "No"}
+                        className="mr-2"
+                      />
+                      No
+                    </label>
+                  </div>}
+              </div>
             </div>
           </div>{" "}
           <div class="w-full flex justify-center space-x-4 mt-6 mx-auto py-2">
-            {" "}
-            <button
+            {" "}<button
               type="submit"
               class="w-md py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50"
             >

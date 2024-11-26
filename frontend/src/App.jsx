@@ -7,7 +7,7 @@ import Dashboard from './pages/admin/Dashboard';
 import UserDashboard from './pages/users/Dashboard';
 import UpdatePartner from './pages/admin/UpdatePartner';
 import Login from './pages/auth/Login';
-import Signup from './pages/auth/Signup';
+
 import NotFound from './pages/Notfound';
 import AddPartner from './pages/admin/AddPartner'
 import Partner from './pages/admin/Partner';
@@ -45,7 +45,7 @@ const App = () => {
         </CheckAuth>
       }>
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Signup />} />
+       
       </Route>
 
       
