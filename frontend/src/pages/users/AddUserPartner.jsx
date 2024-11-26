@@ -21,26 +21,17 @@ function AddUserPartner() {
     offers_transportation: [],
     emergency_room: []
   });
+  const [isGenderOpen, setIsGenderOpen] = useState(false);
+  const [isAgeRangeOpen, setIsAgeRangeOpen] = useState(false);
+  const [isCitizenshipOpen, setIsCitizenshipOpen] = useState(false);
+  const [isInsuranceOpen, setIsInsuranceOpen] = useState(false);
+  const [isPhysicalOpen, setIsPhysicalOpen] = useState(false);
+  const [isMentalOpen, setIsMentalOpen] = useState(false);
+  const [isSocialOpen, setIsSocialOpen] = useState(false);
+  const [isEmergencyOpen, setIsEmergencyOpen] = useState(false);
+  const [isTransportationOpen, setIsTransportationOpen] = useState(false);
 
-  // const handleChange = event => {
-  //   const { value, name } = event.target;
-
-  //   setFormData(prevformData => {
-  //     const currentOptions = prevformData[name] || [];
-
-  //     if (currentOptions.includes(value)) {
-  //       return {
-  //         ...prevformData,
-  //         [name]: currentOptions.filter(option => option !== value)
-  //       };
-  //     } else {
-  //       return {
-  //         ...prevformData,
-  //         [name]: [...currentOptions, value]
-  //       };
-  //     }
-  //   });
-  // };
+  
   const handleChange2 = event => {
     setFormData({
       ...formData,
@@ -75,15 +66,7 @@ function AddUserPartner() {
     }
   };
 
-  const [isGenderOpen, setIsGenderOpen] = useState(false);
-  const [isAgeRangeOpen, setIsAgeRangeOpen] = useState(false);
-  const [isCitizenshipOpen, setIsCitizenshipOpen] = useState(false);
-  const [isInsuranceOpen, setIsInsuranceOpen] = useState(false);
-  const [isPhysicalOpen, setIsPhysicalOpen] = useState(false);
-  const [isMentalOpen, setIsMentalOpen] = useState(false);
-  const [isSocialOpen, setIsSocialOpen] = useState(false);
-  const [isEmergencyOpen, setIsEmergencyOpen] = useState(false);
-  const [isTransportationOpen, setIsTransportationOpen] = useState(false);
+
   const toggleDropdown = field => {
     if (field === "gender") {
       setIsGenderOpen(prev => !prev);
@@ -293,7 +276,7 @@ function AddUserPartner() {
                 Email Adress
               </label>{" "}
               <input
-                type="text"
+                type="email"
                 name="email"
                 id="email"
                 value={formData.email}
