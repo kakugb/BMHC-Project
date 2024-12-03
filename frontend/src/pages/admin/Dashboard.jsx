@@ -263,6 +263,24 @@ const Dashboard = () => {
   }, []);
 
 
+  const handleReset = () => {
+    setFormData({
+      gender: [],
+      age_range: [],
+      citizenship_status: [],
+      insurance: [],
+      zip_code: [],
+      physical: [],
+      mental: [],
+      social_determinants_of_health: [],
+      offers_transportation: [],
+      emergency_room: []
+    });
+    
+    setDropdowns(fields.map(() => ({ isOpen: false, search: "", selectedOptions: [] })));
+    setMessage(""); // Optional: clear message
+    setFilteredPartners([]); // Optional: clear the filtered partners
+  };
 
   return (
     <>
@@ -270,7 +288,7 @@ const Dashboard = () => {
         <div className="w-3/12">
           <form
             onSubmit={handleSubmit}
-            className="w-full h-screen mt-1 space-y-6  bg-gray-300  ml-2"
+            className="w-full mt-1 space-y-6  bg-gray-300  ml-2"
           >
             {fields.map((field, index) => {
               const dropdown = dropdowns[index];
@@ -332,8 +350,13 @@ const Dashboard = () => {
               );
             })}
 
-        
+
           </form>
+          <div className="w-full pt-4">
+          <button className=" bg-blue-600 hover:to-blue-400 p-2 rounded-md text-white font-bold  flex mx-auto"
+           onClick={handleReset}
+          >Reset Filter</button>
+          </div>
         </div>
         <div className="w-9/12 mx-4">
   {currentEntries.length ? (
