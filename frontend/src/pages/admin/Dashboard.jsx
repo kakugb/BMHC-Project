@@ -18,12 +18,10 @@ const Dashboard = () => {
   const [error, setError] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
- const [karamat,setKaramat]= useState([])
-  const entriesPerPage = 6;  // You can adjust this number
+  const [karamat,setKaramat]=useState([])
+  const entriesPerPage = 7;
 
-  // Pagination logic for filtered partners
- 
-
+  
   const [formData, setFormData] = useState({
     gender: [],
     age_range: [],
@@ -381,7 +379,8 @@ const Dashboard = () => {
       </tbody>
     </table>
   ) : (
-    <table className="w-full divide-y divide-gray-200 bg-gray- p-5">
+    <div className=" overflow-y-auto" style={{ maxHeight: '90%' }}>
+    <table className="w-full divide-y divide-gray-200 bg-gray-100 p-5  ">
       <thead>
         <tr>
           <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
@@ -398,8 +397,8 @@ const Dashboard = () => {
           </th>
         </tr>
       </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {currentEntriesKaramat.map((partner) => (
+      <tbody className="bg-white divide-y divide-gray-200 ">
+        {karamat.map((partner) => (
           <tr key={partner._id}>
             <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
               {partner.name}
@@ -422,29 +421,11 @@ const Dashboard = () => {
         ))}
       </tbody>
     </table>
-    
+    </div>
   )}
 
-  {
-    currentEntriesKaramat ? <div className="flex justify-center py-4">
-    <button
-      className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
-      onClick={() => handlePageChangeKaramat(currentPageKaramat - 1)}
-      disabled={currentPageKaramat === 1}
-    >
-      Previous
-    </button>
-    <span className="px-4 py-2 text-lg">
-      {currentPageKaramat}/{totalPagesKaramat}
-    </span>
-    <button
-      className="px-4 py-2 bg-gray-500 text-white rounded-r-md"
-      onClick={() => handlePageChangeKaramat(currentPageKaramat + 1)}
-      disabled={currentPageKaramat === totalPagesKaramat}
-    >
-      Next
-    </button>
-  </div> :<div className="flex justify-center py-4">
+{filteredPartners.length > entriesPerPage && (
+    <div className="flex justify-center py-4">
       <button
         className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
         onClick={() => handlePageChange(currentPage - 1)}
@@ -463,8 +444,7 @@ const Dashboard = () => {
         Next
       </button>
     </div>
-  }
-
+  )}
 </div>
 
       </div>
