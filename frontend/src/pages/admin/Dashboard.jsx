@@ -18,7 +18,12 @@ const Dashboard = () => {
   const [error, setError] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const entriesPerPage = 7;
+ const [karamat,setKaramat]= useState([])
+  const entriesPerPage = 6;  // You can adjust this number
+
+  // Pagination logic for filtered partners
+ 
+
   const [formData, setFormData] = useState({
     gender: [],
     age_range: [],
@@ -100,6 +105,22 @@ const Dashboard = () => {
     }
   };
 
+
+  const [currentPageKaramat, setCurrentPageKaramat] = useState(1);
+  const totalPagesKaramat = Math.ceil(karamat.length / entriesPerPage);
+  const currentEntriesKaramat = karamat.slice(
+    (currentPageKaramat - 1) * entriesPerPage,
+    currentPageKaramat * entriesPerPage
+  );
+  const handlePageChangeKaramat = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPagesKaramat) {
+      setCurrentPageKaramat(pageNumber);
+    }
+  };
+    
+
+
+
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedPartner(null);
@@ -146,7 +167,18 @@ const Dashboard = () => {
       [fields[index].key]: updatedOptions,
     }));
   };
-  
+  const fetchAllPartners = () => {
+    axios
+      .get("http://localhost:5000/api/partners/list")
+      .then((response) => {
+        setKaramat(response.data);
+      })
+      .catch((error) => console.error("Error fetching partners:", error));
+  };
+
+  useEffect(() => {
+    fetchAllPartners();
+  }, []);
 
   useEffect(() => {
     const fetchFilteredData = async () => {
@@ -302,14 +334,7 @@ const Dashboard = () => {
               );
             })}
 
-            {/* <div className="flex justify-start">
-              <button
-                type="submit"
-                className="bg-blue-500 text-white px-6 py-2 rounded"
-              >
-                Submit
-              </button>
-            </div> */}
+        
           </form>
         </div>
         <div className="w-9/12 mx-4">
@@ -356,13 +381,70 @@ const Dashboard = () => {
       </tbody>
     </table>
   ) : (
-    <div className="text-3xl font-bold text-center text-gray-600 py-4">
-      No enteries select by user
-    </div>
+    <table className="w-full divide-y divide-gray-200 bg-gray- p-5">
+      <thead>
+        <tr>
+          <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+            Name
+          </th>
+          <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+            Email
+          </th>
+          <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+            Contact Number
+          </th>
+          <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+            Detail
+          </th>
+        </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {currentEntriesKaramat.map((partner) => (
+          <tr key={partner._id}>
+            <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
+              {partner.name}
+            </td>
+            <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
+              {partner.email}
+            </td>
+            <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
+              {partner.telephone}
+            </td>
+            <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
+              <button
+                className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                onClick={() => fetchPartnerDetails(partner._id)}
+              >
+                View Detail
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    
   )}
 
-  {filteredPartners.length > entriesPerPage && (
-    <div className="flex justify-center py-4">
+  {
+    currentEntriesKaramat ? <div className="flex justify-center py-4">
+    <button
+      className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
+      onClick={() => handlePageChangeKaramat(currentPageKaramat - 1)}
+      disabled={currentPageKaramat === 1}
+    >
+      Previous
+    </button>
+    <span className="px-4 py-2 text-lg">
+      {currentPageKaramat}/{totalPagesKaramat}
+    </span>
+    <button
+      className="px-4 py-2 bg-gray-500 text-white rounded-r-md"
+      onClick={() => handlePageChangeKaramat(currentPageKaramat + 1)}
+      disabled={currentPageKaramat === totalPagesKaramat}
+    >
+      Next
+    </button>
+  </div> :<div className="flex justify-center py-4">
       <button
         className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
         onClick={() => handlePageChange(currentPage - 1)}
@@ -370,7 +452,9 @@ const Dashboard = () => {
       >
         Previous
       </button>
-      <span className="px-4 py-2 text-lg">{currentPage}</span>
+      <span className="px-4 py-2 text-lg">
+        {currentPage}/{totalPages}
+      </span>
       <button
         className="px-4 py-2 bg-gray-500 text-white rounded-r-md"
         onClick={() => handlePageChange(currentPage + 1)}
@@ -379,7 +463,8 @@ const Dashboard = () => {
         Next
       </button>
     </div>
-  )}
+  }
+
 </div>
 
       </div>

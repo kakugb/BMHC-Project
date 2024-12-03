@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  zipCodeOptions,
-  physicalServices,
-  mentalServices,
-  socialServices
-} from "../../utils/data.js";
+import CloseIcon from '@mui/icons-material/Close';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios"
@@ -177,7 +172,9 @@ useEffect(() => {
     });
   };
   
-
+const navigatPartner= ()=>{
+  navigate('/admin/partner')
+}
 
   if (loading) {
     return <p>Loading...</p>;
@@ -185,11 +182,16 @@ useEffect(() => {
 
  
   return (
-    <div className="w-full mt-6 mx-auto ">
+    <div className="w-full mt-4 mx-auto ">
       <div className="w-11/12 mx-auto  pb-2 px-4 rounded  border-gray-500 shadow-xl shadow-gray-600 bg-gray-200 ">
-        <h1 className="text-center font-bold text-3xl text-black">
-          Add Partner
+        <h1 className="text-center font-bold text-3xl text-black pt-2">
+          Update Partner
         </h1>
+       <div className="w-full flex justify-end">
+       <button className=" text-end  text-white text-xl font-semibold bg-red-700 px-2 py-1 rounded-md" onClick={navigatPartner}>
+          close
+        </button>
+       </div>
         <div class="mt-8 grid lg:grid-cols-3 gap-4">
           <div className="text-xl font-bold text-center">
             <h1>Personal Information</h1>
@@ -1008,7 +1010,7 @@ useEffect(() => {
               type="submit"
               class="w-md py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50"
             >
-              Add Partner
+              Update Partner
             </button>{" "}
           </div>{" "}
         </form>

@@ -189,24 +189,26 @@ function Dashbaord() {
         </table>
 
         {filteredPartners.length > entriesPerPage && (
-          <div className="flex justify-center py-4">
-            <button
-              className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            <span className="px-4 py-2 text-lg">{currentPage}</span>
-            <button
-              className="px-4 py-2 bg-gray-500 text-white rounded-r-md"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
-        )}
+    <div className="flex justify-center py-4">
+      <button
+        className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+      >
+        Previous
+      </button>
+      <span className="px-4 py-2 text-lg">
+        {currentPage}/{totalPages}
+      </span>
+      <button
+        className="px-4 py-2 bg-gray-500 text-white rounded-r-md"
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+      >
+        Next
+      </button>
+    </div>
+  )}
       </div>
 
       <Modal
