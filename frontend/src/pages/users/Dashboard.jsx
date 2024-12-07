@@ -67,10 +67,12 @@ function Dashbaord() {
   });
 
   const totalPages = Math.ceil(filteredPartners.length / entriesPerPage);
+
   const currentEntries = filteredPartners.slice(
     (currentPage - 1) * entriesPerPage,
     currentPage * entriesPerPage
   );
+  
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
@@ -81,7 +83,6 @@ function Dashbaord() {
 
 
   const handleSearchChange = (event) => {
-    console.log(event);
     setSearchQuery(event.target.value);
   };
 
@@ -107,7 +108,9 @@ function Dashbaord() {
     } else {
       fetchPartnersByName(searchQuery);
     }
+    setCurrentPage(1); // Reset to the first page whenever search query changes
   }, [searchQuery]);
+  
 
   return (
     <>
@@ -239,7 +242,7 @@ function Dashbaord() {
                 <h1 className="ml-5">
                   {selectedPartner.physical
                     ? Array.isArray(selectedPartner.physical)
-                      ? selectedPartner.age_range
+                      ? selectedPartner.physical
                           .map((status, index) => `(${status})`)
                           .join("   ")
                       : `(${selectedPartner.physical})`

@@ -500,7 +500,7 @@ const Dashboard = () => {
                 <h1 className="ml-5">
                   {selectedPartner.physical
                     ? Array.isArray(selectedPartner.physical)
-                      ? selectedPartner.age_range
+                      ? selectedPartner.physical
                           .map((status, index) => `(${status})`)
                           .join("   ")
                       : `(${selectedPartner.physical})`
