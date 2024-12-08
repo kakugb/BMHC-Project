@@ -76,12 +76,24 @@ const Dashboard = () => {
     (currentPage - 1) * entriesPerPage,
     currentPage * entriesPerPage
   );
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
+  const [currentPageKaramat, setCurrentPageKaramat] = useState(1);
   const totalPagesKaramat = Math.ceil(karamat.length / entriesPerPage);
   const currentEntriesKaramat = karamat.slice(
-    (currentPage - 1) * entriesPerPage,
-    currentPage * entriesPerPage
+    (currentPageKaramat - 1) * entriesPerPage,
+    currentPageKaramat * entriesPerPage
   );
+  const handlePageChangeKaramat = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPagesKaramat) {
+      setCurrentPageKaramat(pageNumber);
+    }
+  };
+
 
   
 
@@ -222,8 +234,39 @@ const Dashboard = () => {
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
-
+  // const handleReset = () => {
+  //   setFormData({
+  //     gender: [],
+  //     age_range: [],
+  //     citizenship_status: [],
+  //     insurance: [],
+  //     zip_code: [],
+  //     physical: [],
+  //     mental: [],
+  //     social_determinants_of_health: [],
+  //     offers_transportation: [],
+  //     emergency_room: []
+  //   });
+  //   fetchAllPartners()
+  //   setDropdowns(fields.map(() => ({ isOpen: false, search: "", selectedOptions: [] })));
+  //   setFilteredPartners([]); // Clear filtered partners
+  //    setMessage(""); // Optional: Clear any messages
+  // };
+  const handleReset = () => {
+    // Reset form data for specific fields
+    const clearedFormData = { ...formData };
   
+    fields.forEach((field, index) => {
+      clearedFormData[field.key] = []; // Clear the field's data
+      dropdowns[index] = { isOpen: false, search: "", selectedOptions: [] }; // Reset dropdown state
+    });
+  
+    setFormData(clearedFormData);
+    setDropdowns([...dropdowns]); // Update dropdown states
+    setIsSelected(false); // Optional: Reset the `isSelected` state
+  };
+  
+ 
  
   return (
     <>
@@ -231,7 +274,7 @@ const Dashboard = () => {
         <div className="w-3/12">
           <form
             onSubmit={handleSubmit}
-            className="w-full mt-1 space-y-6  bg-gray-300  ml-2"
+            className=" w-full mt-1 space-y-6  bg-gray-300  ml-2"
           >
             {fields.map((field, index) => {
               const dropdown = dropdowns[index];
@@ -244,7 +287,7 @@ const Dashboard = () => {
                   <button
                     type="button"
                     onClick={() => toggleDropdown(index)}
-                    className="w-full bg-gray-200 py-1.5 px-4 rounded flex justify-between items-center"
+                    className="w-full bg-gray-200 py-2 px-4 rounded flex justify-between items-center"
                   >
                     {dropdown.selectedOptions.length > 0
                       ? dropdown.selectedOptions.join(", ")
@@ -294,7 +337,11 @@ const Dashboard = () => {
             })}
 
           </form>
-          
+          <div className="w-full pt-4">
+          <button className=" bg-blue-600 hover:to-blue-400 p-2 rounded-md text-white font-bold  flex mx-auto"
+           onClick={handleReset}
+          >Reset Filter</button>
+          </div>
         </div>
         <div className="w-9/12 mx-4">
   {currentEntries?.length > 0 && karamat?.length>0? (
@@ -364,7 +411,7 @@ const Dashboard = () => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {karamat?.map((partner) => (
+          {karamat.length>0 && karamat?.map((partner) => (
             <tr key={partner._id}>
               <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
                 {partner.name}
