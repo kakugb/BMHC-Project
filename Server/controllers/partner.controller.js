@@ -151,16 +151,21 @@ exports.filterPartners = async (req, res) => {
     if (Object.keys(filterQuery).length === 0) {
       return res.status(400).json({ message: 'At least one filter is required' });
     }
+
     const partners = await Partner.find(filterQuery);
 
+    // Returning a custom message without 404 status code
     if (partners.length === 0) {
       return res.status(404).json({ message: 'No partners found matching the criteria' });
     }
+    
+
     res.status(200).json(partners);
   } catch (error) {
     res.status(500).json({ message: 'Error filtering partners', error: error.message });
   }
 };
+
 
 
 

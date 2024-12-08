@@ -1,27 +1,27 @@
-import React, { useEffect, useState ,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
+import Modal from "react-modal";
 import {
   zipCodeOptions,
   physicalServices,
   mentalServices,
   socialServices
 } from "../../utils/data";
-import axios from "axios";
 import "../../../src/App.css";
-import Modal from "react-modal";
+
 Modal.setAppElement("#root");
+
 const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState(null);
-  const [message, setMessage] = useState(""); // Add this state
   const [filteredPartners, setFilteredPartners] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState();
+  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [karamat,setKaramat]=useState([])
+  const [isSelected, setIsSelected] = useState(false);
+  const [karamat, setKaramat] = useState([]);
   const entriesPerPage = 7;
 
-  
   const [formData, setFormData] = useState({
     gender: [],
     age_range: [],
@@ -36,11 +36,7 @@ const Dashboard = () => {
   });
 
   const fields = [
-    {
-      label: "Gender",
-      key: "gender",
-      options: ["Male", "Female", "Non-binary"]
-    },
+    { label: "Gender", key: "gender", options: ["Male", "Female", "Non-binary"] },
     {
       label: "Age Range",
       key: "age_range",
@@ -49,12 +45,7 @@ const Dashboard = () => {
     {
       label: "Citizenship Status",
       key: "citizenship_status",
-      options: [
-        "Citizen",
-        "Resident",
-        "Non-immigrant (temporary visa)",
-        "Undocumented"
-      ]
+      options: ["Citizen", "Resident", "Non-immigrant (temporary visa)", "Undocumented"]
     },
     {
       label: "Insurance",
@@ -68,11 +59,7 @@ const Dashboard = () => {
         "Accepts patients/clients without insurance"
       ]
     },
-    {
-      label: "Zip Code",
-      key: "zip_code",
-      options: zipCodeOptions // Correctly assign zipCodeOptions here
-    },
+    // { label: "Zip Code", key: "zip_code", options: zipCodeOptions },
     { label: "Physical Health", key: "physical", options: physicalServices },
     { label: "Mental Health", key: "mental", options: mentalServices },
     {
@@ -80,16 +67,8 @@ const Dashboard = () => {
       key: "social_determinants_of_health",
       options: socialServices
     },
-    {
-      label: "Offers Transportation",
-      key: "offers_transportation",
-      options: ["Yes", "No"]
-    },
-    {
-      label: "Emergency Room Visits",
-      key: "emergency_room",
-      options: ["Yes", "No"]
-    }
+    { label: "Offers Transportation", key: "offers_transportation", options: ["Yes", "No"] },
+    { label: "Emergency Room Visits", key: "emergency_room", options: ["Yes", "No"] }
   ];
 
   const totalPages = Math.ceil(filteredPartners.length / entriesPerPage);
@@ -97,43 +76,25 @@ const Dashboard = () => {
     (currentPage - 1) * entriesPerPage,
     currentPage * entriesPerPage
   );
-  const handlePageChange = (pageNumber) => {
-    if (pageNumber > 0 && pageNumber <= totalPages) {
-      setCurrentPage(pageNumber);
-    }
-  };
 
-
-  const [currentPageKaramat, setCurrentPageKaramat] = useState(1);
   const totalPagesKaramat = Math.ceil(karamat.length / entriesPerPage);
   const currentEntriesKaramat = karamat.slice(
-    (currentPageKaramat - 1) * entriesPerPage,
-    currentPageKaramat * entriesPerPage
+    (currentPage - 1) * entriesPerPage,
+    currentPage * entriesPerPage
   );
-  const handlePageChangeKaramat = (pageNumber) => {
-    if (pageNumber > 0 && pageNumber <= totalPagesKaramat) {
-      setCurrentPageKaramat(pageNumber);
-    }
-  };
-    
 
+  
 
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedPartner(null);
-  };
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission
     setLoading(true);
     setError(null);
-
+  
     try {
       const response = await axios.post(
         "http://localhost:5000/api/partners/filter",
         formData
       );
-
       setFilteredPartners(response.data);
     } catch (err) {
       setError("Error fetching filtered partners");
@@ -142,36 +103,34 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+  
 
   const [dropdowns, setDropdowns] = useState(
     fields.map(() => ({ isOpen: false, search: "", selectedOptions: [] }))
   );
 
-  
+  const dropdownRefs = useRef([]);
 
-  const handleOptionToggle = (index, option) => {
-    const updatedOptions = dropdowns[index].selectedOptions.includes(option)
-      ? dropdowns[index].selectedOptions.filter((item) => item !== option)
-      : [...dropdowns[index].selectedOptions, option];
-  
-    setDropdowns((prev) =>
-      prev.map((dropdown, i) =>
-        i === index ? { ...dropdown, selectedOptions: updatedOptions } : dropdown
-      )
-    );
-  
-    setFormData((prev) => ({
-      ...prev,
-      [fields[index].key]: updatedOptions,
-    }));
+  const fetchAllPartners = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/partners/list");
+      setKaramat(response.data);
+    } catch (err) {
+      console.error("Error fetching partners:", err);
+    }
   };
-  const fetchAllPartners = () => {
-    axios
-      .get("http://localhost:5000/api/partners/list")
-      .then((response) => {
-        setKaramat(response.data);
-      })
-      .catch((error) => console.error("Error fetching partners:", error));
+
+  const fetchFilteredData = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/partners/filter",
+        formData
+      );
+      setFilteredPartners(response.data);
+    } catch (err) {
+      console.error("Error fetching filtered data:", err);
+      setFilteredPartners([]);
+    }
   };
 
   useEffect(() => {
@@ -179,28 +138,33 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    const fetchFilteredData = async () => {
-      if (Object.values(formData).every(value => value.length === 0)) {
-        setMessage("No entries selected by user");
-        setFilteredPartners([]);
-        return;
-      }
-  
-      try {
-        const response = await axios.post(
-          "http://localhost:5000/api/partners/filter",
-          formData
-        );
-        console.log("API Response:", response.data);
-        setFilteredPartners(response.data);
-      } catch (error) {
-        console.error("Error fetching filtered data:", error);
-      }
-    };
-  
     fetchFilteredData();
   }, [formData]);
-  
+
+  const handleOptionToggle = (index, option) => {
+   
+    const updatedOptions = dropdowns[index].selectedOptions.includes(option)
+      ? dropdowns[index].selectedOptions.filter((item) => item !== option)
+      : [...dropdowns[index].selectedOptions, option];
+     
+    setDropdowns((prev) =>
+      prev.map((dropdown, i) =>
+        i === index ? { ...dropdown, selectedOptions: updatedOptions } : dropdown
+      )
+    );
+
+    setFormData((prev) => ({
+      ...prev,
+      [fields[index].key]: updatedOptions
+    }));
+    
+    const anyFieldSelected = fields.some((_, i) =>
+      i === index
+        ? updatedOptions.length > 0 // Check updated field
+        : dropdowns[i].selectedOptions.length > 0 // Check other fields
+    );
+    setIsSelected(anyFieldSelected);
+  };
 
   const handleSearchChange = (index, value) => {
     setDropdowns((prev) =>
@@ -209,7 +173,28 @@ const Dashboard = () => {
       )
     );
   };
+
+  const toggleDropdown = (index) => {
   
+    setDropdowns((prev) =>
+      prev.map((dropdown, i) =>
+        i === index ? { ...dropdown, isOpen: !dropdown.isOpen } : dropdown
+      )
+    );
+    
+  };
+
+  const handleClickOutside = (event) => {
+    dropdownRefs.current.forEach((dropdown, index) => {
+      if (dropdown && !dropdown.contains(event.target)) {
+        setDropdowns((prev) =>
+          prev.map((dropdown, i) =>
+            i === index ? { ...dropdown, isOpen: false } : dropdown
+          )
+        );
+      }
+    });
+  };
 
   const fetchPartnerDetails = async (id) => {
     try {
@@ -222,38 +207,6 @@ const Dashboard = () => {
       console.error("Error fetching partner details:", error);
     }
   };
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  const dropdownRefs = useRef([]); 
-
-  const toggleDropdown = (index) => {
-    setDropdowns((prev) =>
-      prev.map((dropdown, i) =>
-        i === index ? { ...dropdown, isOpen: !dropdown.isOpen } : dropdown
-      )
-    );
-  };
-
- 
-  const handleClickOutside = (event) => {
-    dropdownRefs.current.forEach((dropdown, index) => {
-      if (dropdown && !dropdown.contains(event.target)) {
-       
-        setDropdowns((prev) =>
-          prev.map((dropdown, i) =>
-            i === index ? { ...dropdown, isOpen: false } : dropdown
-          )
-        );
-      }
-    });
-  };
-
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -262,26 +215,16 @@ const Dashboard = () => {
     };
   }, []);
 
-
-  const handleReset = () => {
-    setFormData({
-      gender: [],
-      age_range: [],
-      citizenship_status: [],
-      insurance: [],
-      zip_code: [],
-      physical: [],
-      mental: [],
-      social_determinants_of_health: [],
-      offers_transportation: [],
-      emergency_room: []
-    });
-    
-    setDropdowns(fields.map(() => ({ isOpen: false, search: "", selectedOptions: [] })));
-    setMessage(""); // Optional: clear message
-    setFilteredPartners([]); // Optional: clear the filtered partners
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedPartner(null);
   };
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+
+  
+ 
   return (
     <>
       <div className="w-full flex justify-normal gap-2 mr-7">
@@ -350,16 +293,11 @@ const Dashboard = () => {
               );
             })}
 
-
           </form>
-          <div className="w-full pt-4">
-          <button className=" bg-blue-600 hover:to-blue-400 p-2 rounded-md text-white font-bold  flex mx-auto"
-           onClick={handleReset}
-          >Reset Filter</button>
-          </div>
+          
         </div>
         <div className="w-9/12 mx-4">
-  {currentEntries.length ? (
+  {currentEntries?.length > 0 && karamat?.length>0? (
     <table className="w-full divide-y divide-gray-200 bg-gray- p-5">
       <thead>
         <tr>
@@ -378,7 +316,7 @@ const Dashboard = () => {
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-200">
-        {currentEntries.map((partner) => (
+        {currentEntries?.map((partner) => (
           <tr key={partner._id}>
             <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
               {partner.name}
@@ -401,53 +339,59 @@ const Dashboard = () => {
         ))}
       </tbody>
     </table>
+  ) : karamat?.length > 0 && isSelected && currentEntries?.length === 0? (
+    <div className="text-center text-gray-500 py-6">
+    No matched data found.
+  </div>
+    
   ) : (
-    <div className=" overflow-y-auto" style={{ maxHeight: '90%' }}>
-    <table className="w-full divide-y divide-gray-200 bg-gray-100 p-5  ">
-      <thead>
-        <tr>
-          <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
-            Name
-          </th>
-          <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
-            Email
-          </th>
-          <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
-            Contact Number
-          </th>
-          <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
-            Detail
-          </th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200 ">
-        {karamat.map((partner) => (
-          <tr key={partner._id}>
-            <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
-              {partner.name}
-            </td>
-            <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
-              {partner.email}
-            </td>
-            <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
-              {partner.telephone}
-            </td>
-            <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
-              <button
-                className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
-                onClick={() => fetchPartnerDetails(partner._id)}
-              >
-                View Detail
-              </button>
-            </td>
+    <div className="overflow-y-auto" style={{ maxHeight: '90%' }}>
+      <table className="w-full divide-y divide-gray-200 bg-gray-100 p-5">
+        <thead>
+          <tr>
+            <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+              Name
+            </th>
+            <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+              Email
+            </th>
+            <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+              Contact Number
+            </th>
+            <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+              Detail
+            </th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {karamat?.map((partner) => (
+            <tr key={partner._id}>
+              <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
+                {partner.name}
+              </td>
+              <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
+                {partner.email}
+              </td>
+              <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
+                {partner.telephone}
+              </td>
+              <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
+                <button
+                  className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                  onClick={() => fetchPartnerDetails(partner._id)}
+                >
+                  View Detail
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
+    
   )}
 
-{filteredPartners.length > entriesPerPage && (
+  {filteredPartners.length > entriesPerPage && (
     <div className="flex justify-center py-4">
       <button
         className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
@@ -469,6 +413,8 @@ const Dashboard = () => {
     </div>
   )}
 </div>
+
+
 
       </div>
 
@@ -649,3 +595,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+

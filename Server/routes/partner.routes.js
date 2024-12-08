@@ -10,7 +10,7 @@ router.get('/list', partnerController.getAllPartners);
 
 
 router.get('/:id', partnerController.singlePartner);
-
+ 
 
 router.put('/update/:id', partnerController.updatePartner); 
 
