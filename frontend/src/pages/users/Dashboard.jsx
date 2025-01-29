@@ -72,15 +72,12 @@ function Dashbaord() {
     (currentPage - 1) * entriesPerPage,
     currentPage * entriesPerPage
   );
-  
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
     }
   };
-
-
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -110,7 +107,6 @@ function Dashbaord() {
     }
     setCurrentPage(1); // Reset to the first page whenever search query changes
   }, [searchQuery]);
-  
 
   return (
     <>
@@ -145,7 +141,7 @@ function Dashbaord() {
         </div>
       </div>
 
-      <div className="w-10/12 mx-auto mt-6 ">
+      <div className="w-10/12 mx-auto mt-6 shadow-md shadow-slate-600">
         <table className="w-full divide-y divide-gray-200 bg-gray- p-5">
           <thead>
             <tr>
@@ -161,13 +157,12 @@ function Dashbaord() {
               <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
                 Detail
               </th>
-          
             </tr>
           </thead>
 
           <tbody className="bg-white divide-y divide-gray-200">
             {currentEntries.map((partner, ind) => (
-              <tr key={ind}>
+              <tr key={ind} className="hover:bg-gray-50">
                 <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
                   {partner.name}
                 </td>
@@ -185,186 +180,192 @@ function Dashbaord() {
                     View Detail
                   </button>
                 </td>
-               
               </tr>
             ))}
           </tbody>
         </table>
 
         {filteredPartners.length > entriesPerPage && (
-    <div className="flex justify-center py-4">
-      <button
-        className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
-        onClick={() => handlePageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-      >
-        Previous
-      </button>
-      <span className="px-4 py-2 text-lg">
-        {currentPage}/{totalPages}
-      </span>
-      <button
-        className="px-4 py-2 bg-gray-500 text-white rounded-r-md"
-        onClick={() => handlePageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-      >
-        Next
-      </button>
-    </div>
-  )}
+          <div className="flex justify-center py-4">
+            <button
+              className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2 text-lg">
+              {currentPage}/{totalPages}
+            </span>
+            <button
+              className="px-4 py-2 bg-gray-500 text-white rounded-r-md"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
       <Modal
-  isOpen={isModalOpen}
-  onRequestClose={closeModal}
-  contentLabel="Partner Details"
-  className="modal-content"
-  overlayClassName="modal-overlay"
-  style={{ content: { width: "900px", padding: "20px", borderRadius: "10px" } }}
->
-  {selectedPartner ? (
-    <div className="space-y-4">
-      {/* Modal Header */}
-      <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
-        Partner Details
-      </h2>
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Partner Details"
+        className="modal-content"
+        overlayClassName="modal-overlay"
+        style={{
+          content: { width: "900px", padding: "20px", borderRadius: "10px" },
+        }}
+      >
+        {selectedPartner ? (
+          <div className="space-y-4">
+            {/* Modal Header */}
+            <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
+              Partner Details
+            </h2>
 
-      {/* Grid Layout for Sections */}
-      <div className="grid grid-cols-3 gap-4">
-        {/* Personal Information */}
-        <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-700 mb-3">
-            Personal Information
-          </h3>
-          <div className="space-y-2">
-            <p className="text-sm text-gray-600">
-              <strong>Name:</strong> {selectedPartner.name}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Email:</strong> {selectedPartner.email}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Address:</strong> {selectedPartner.address}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Contact Number:</strong> {selectedPartner.telephone}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Zip Code:</strong> {selectedPartner.zip_code}
-            </p>
+            {/* Grid Layout for Sections */}
+            <div className="grid grid-cols-3 gap-4">
+              {/* Personal Information */}
+              <div className="bg-gray-50 p-4 rounded-lg shadow-md shadow-slate-400 group hover:shadow-lg hover:-translate-y-2 transform transition-all duration-300">
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                  Personal Information
+                </h3>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600">
+                    <strong>Name:</strong> {selectedPartner.name}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Email:</strong> {selectedPartner.email}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Address:</strong> {selectedPartner.address}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Contact Number:</strong> {selectedPartner.telephone}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Zip Code:</strong> {selectedPartner.zip_code}
+                  </p>
+                </div>
+              </div>
+
+              {/* Service Provided */}
+              <div className="bg-gray-50 p-4 rounded-lg shadow-md shadow-slate-400 group hover:shadow-lg hover:-translate-y-2 transform transition-all duration-300">
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                  Service Provided
+                </h3>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600">
+                    <strong>Physical:</strong>{" "}
+                    {selectedPartner.physical
+                      ? Array.isArray(selectedPartner.physical)
+                        ? selectedPartner.physical
+                            .map((status, index) => `(${status})`)
+                            .join(", ")
+                        : `(${selectedPartner.physical})`
+                      : "No data available"}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Mental:</strong>{" "}
+                    {selectedPartner.mental
+                      ? Array.isArray(selectedPartner.mental)
+                        ? selectedPartner.mental
+                            .map((status, index) => `(${status})`)
+                            .join(", ")
+                        : `(${selectedPartner.mental})`
+                      : "No data available"}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Social Determinants of Health:</strong>{" "}
+                    {selectedPartner.social_determinants_of_health
+                      ? Array.isArray(
+                          selectedPartner.social_determinants_of_health
+                        )
+                        ? selectedPartner.social_determinants_of_health
+                            .map((status, index) => `(${status})`)
+                            .join(", ")
+                        : `(${selectedPartner.social_determinants_of_health})`
+                      : "No data available"}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Offer Transportation:</strong>{" "}
+                    {selectedPartner.offers_transportation}
+                  </p>
+                </div>
+              </div>
+
+              {/* Served Information */}
+              <div className="bg-gray-50 p-4 rounded-lg shadow-md shadow-slate-400 group hover:shadow-lg hover:-translate-y-2 transform transition-all duration-300">
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                  Served Information
+                </h3>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600">
+                    <strong>Age Range(s) Served:</strong>{" "}
+                    {selectedPartner.age_range
+                      ? Array.isArray(selectedPartner.age_range)
+                        ? selectedPartner.age_range
+                            .map((status, index) => `(${status})`)
+                            .join(", ")
+                        : `(${selectedPartner.age_range})`
+                      : "No data available"}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Citizenship Status(es) Served:</strong>{" "}
+                    {selectedPartner.citizenship_status
+                      ? Array.isArray(selectedPartner.citizenship_status)
+                        ? selectedPartner.citizenship_status
+                            .map((status, index) => `(${status})`)
+                            .join(", ")
+                        : `(${selectedPartner.citizenship_status})`
+                      : "No data available"}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Accepted Insurance status(es):</strong>{" "}
+                    {selectedPartner.insurance
+                      ? Array.isArray(selectedPartner.insurance)
+                        ? selectedPartner.insurance
+                            .map((status, index) => `(${status})`)
+                            .join(", ")
+                        : `(${selectedPartner.insurance})`
+                      : "No data available"}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Gender:</strong>{" "}
+                    {selectedPartner.gender
+                      ? Array.isArray(selectedPartner.gender)
+                        ? selectedPartner.gender
+                            .map((status, index) => `(${status})`)
+                            .join(", ")
+                        : `(${selectedPartner.gender})`
+                      : "No data available"}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Emergency Room:</strong>{" "}
+                    {selectedPartner.emergency_room}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Close Button */}
+            <div className="w-full mt-6 flex justify-center">
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200"
+              >
+                Close
+              </button>
+            </div>
           </div>
-        </div>
-
-        {/* Service Provided */}
-        <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-700 mb-3">
-            Service Provided
-          </h3>
-          <div className="space-y-2">
-            <p className="text-sm text-gray-600">
-              <strong>Physical:</strong>{" "}
-              {selectedPartner.physical
-                ? Array.isArray(selectedPartner.physical)
-                  ? selectedPartner.physical
-                      .map((status, index) => `(${status})`)
-                      .join(", ")
-                  : `(${selectedPartner.physical})`
-                : "No data available"}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Mental:</strong>{" "}
-              {selectedPartner.mental
-                ? Array.isArray(selectedPartner.mental)
-                  ? selectedPartner.mental
-                      .map((status, index) => `(${status})`)
-                      .join(", ")
-                  : `(${selectedPartner.mental})`
-                : "No data available"}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Social Determinants of Health:</strong>{" "}
-              {selectedPartner.social_determinants_of_health
-                ? Array.isArray(selectedPartner.social_determinants_of_health)
-                  ? selectedPartner.social_determinants_of_health
-                      .map((status, index) => `(${status})`)
-                      .join(", ")
-                  : `(${selectedPartner.social_determinants_of_health})`
-                : "No data available"}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Offer Transportation:</strong>{" "}
-              {selectedPartner.offers_transportation}
-            </p>
-          </div>
-        </div>
-
-        {/* Served Information */}
-        <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-700 mb-3">
-            Served Information
-          </h3>
-          <div className="space-y-2">
-            <p className="text-sm text-gray-600">
-              <strong>Age Range(s) Served:</strong>{" "}
-              {selectedPartner.age_range
-                ? Array.isArray(selectedPartner.age_range)
-                  ? selectedPartner.age_range
-                      .map((status, index) => `(${status})`)
-                      .join(", ")
-                  : `(${selectedPartner.age_range})`
-                : "No data available"}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Citizenship Status(es) Served:</strong>{" "}
-              {selectedPartner.citizenship_status
-                ? Array.isArray(selectedPartner.citizenship_status)
-                  ? selectedPartner.citizenship_status
-                      .map((status, index) => `(${status})`)
-                      .join(", ")
-                  : `(${selectedPartner.citizenship_status})`
-                : "No data available"}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Accepted Insurance status(es):</strong>{" "}
-              {selectedPartner.insurance
-                ? Array.isArray(selectedPartner.insurance)
-                  ? selectedPartner.insurance
-                      .map((status, index) => `(${status})`)
-                      .join(", ")
-                  : `(${selectedPartner.insurance})`
-                : "No data available"}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Gender:</strong>{" "}
-              {selectedPartner.gender
-                ? Array.isArray(selectedPartner.gender)
-                  ? selectedPartner.gender
-                      .map((status, index) => `(${status})`)
-                      .join(", ")
-                  : `(${selectedPartner.gender})`
-                : "No data available"}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Emergency Room:</strong> {selectedPartner.emergency_room}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Close Button */}
-      <div className="w-full mt-6 flex justify-center">
-        <button
-          onClick={closeModal}
-          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  ) : (
-    <p className="text-center text-gray-600">Loading partner details...</p>
-  )}
-</Modal>
+        ) : (
+          <p className="text-center text-gray-600">
+            Loading partner details...
+          </p>
+        )}
+      </Modal>
 
       <ToastContainer />
     </>

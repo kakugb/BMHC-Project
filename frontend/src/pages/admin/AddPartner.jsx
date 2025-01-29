@@ -107,7 +107,7 @@ function AddPartner() {
       toast.success("Partner added successfully!");
 
       setTimeout(() => {
-        navigate("/user/dashboard");
+        navigate("/admin/dashboard");
       }, 2000);
     } catch (error) {
       console.error(error);
@@ -117,18 +117,18 @@ function AddPartner() {
 
   return (
     <div className="w-full mt-6 mx-auto px-4">
-      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
-        <h1 className="text-center font-semibold text-3xl text-gray-800 mb-6">
+      <div className="max-w-10/12 mx-auto bg-white shadow-lg shadow-slate-600 rounded-lg p-6">
+        <h1 className="text-center font-extrabold text-5xl text-gray-800 mb-10">
           Add Partner
         </h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="text-lg font-semibold text-center text-gray-700">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 mt-4">
+          <div className="text-3xl font-bold text-center text-gray-700">
             Personal Information
           </div>
-          <div className="text-lg font-semibold text-center text-gray-700">
+          <div className="text-3xl font-bold text-center text-gray-700">
             Service Provided
           </div>
-          <div className="text-lg font-semibold text-center text-gray-700">
+          <div className="text-3xl font-bold text-center text-gray-700">
             Patient Information
           </div>
         </div>

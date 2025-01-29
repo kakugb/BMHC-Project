@@ -12,29 +12,7 @@ import "../../../src/App.css";
 Modal.setAppElement("#root");
 
 const Dashboard = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPartner, setSelectedPartner] = useState(null);
-  const [filteredPartners, setFilteredPartners] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isSelected, setIsSelected] = useState(false);
-  const [karamat, setKaramat] = useState([]);
-  const entriesPerPage = 7;
-
-  const [formData, setFormData] = useState({
-    gender: [],
-    age_range: [],
-    citizenship_status: [],
-    insurance: [],
-    zip_code: [],
-    physical: [],
-    mental: [],
-    social_determinants_of_health: [],
-    offers_transportation: [],
-    emergency_room: [],
-  });
-
+  // 1. Define 'fields' before using it in any hooks or functions
   const fields = [
     {
       label: "Gender",
@@ -88,31 +66,88 @@ const Dashboard = () => {
     },
   ];
 
-  const totalPages = Math.ceil(filteredPartners.length / entriesPerPage);
-  const currentEntries = filteredPartners.slice(
-    (currentPage - 1) * entriesPerPage,
-    currentPage * entriesPerPage
+  // 2. Initialize State Variables
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPartner, setSelectedPartner] = useState(null);
+  const [filteredPartners, setFilteredPartners] = useState([]);
+  const [karamat, setKaramat] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isSelected, setIsSelected] = useState(false);
+  const entriesPerPage = 7;
+
+  const [formData, setFormData] = useState({
+    gender: [],
+    age_range: [],
+    citizenship_status: [],
+    insurance: [],
+    zip_code: [],
+    physical: [],
+    mental: [],
+    social_determinants_of_health: [],
+    offers_transportation: [],
+    emergency_room: [],
+  });
+
+  // 3. Initialize Dropdowns State after 'fields' is defined
+  const [dropdowns, setDropdowns] = useState(
+    fields.map(() => ({ isOpen: false, search: "", selectedOptions: [] }))
   );
+
+  const dropdownRefs = useRef([]);
+
+  // 4. Determine if filtering is active
+  const isFiltering = filteredPartners.length > 0;
+
+  // 5. Calculate total pages based on active data set
+  const totalPages = Math.ceil(
+    (isFiltering ? filteredPartners.length : karamat.length) / entriesPerPage
+  );
+
+  // 6. Get current entries based on pagination and filtering
+  const currentEntries = isFiltering
+    ? filteredPartners.slice(
+        (currentPage - 1) * entriesPerPage,
+        currentPage * entriesPerPage
+      )
+    : karamat.slice(
+        (currentPage - 1) * entriesPerPage,
+        currentPage * entriesPerPage
+      );
+
+  // 7. Handle page change
   const handlePageChange = (pageNumber) => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
     }
   };
 
-  const [currentPageKaramat, setCurrentPageKaramat] = useState(1);
-  const totalPagesKaramat = Math.ceil(karamat.length / entriesPerPage);
-  const currentEntriesKaramat = karamat.slice(
-    (currentPageKaramat - 1) * entriesPerPage,
-    currentPageKaramat * entriesPerPage
-  );
-  const handlePageChangeKaramat = (pageNumber) => {
-    if (pageNumber > 0 && pageNumber <= totalPagesKaramat) {
-      setCurrentPageKaramat(pageNumber);
+  // 8. Fetch all partners on component mount
+  const fetchAllPartners = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/partners/list"
+      );
+      setKaramat(response.data);
+    } catch (err) {
+      console.error("Error fetching partners:", err);
+      setError("Error fetching partners data.");
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+  // 9. Fetch filtered partners whenever 'formData' changes
+  const fetchFilteredData = async () => {
+    // If no filters are applied, do not fetch filtered data
+    const hasFilters = fields.some(
+      (field) => formData[field.key] && formData[field.key].length > 0
+    );
+
+    if (!hasFilters) {
+      setFilteredPartners([]);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -122,41 +157,16 @@ const Dashboard = () => {
         formData
       );
       setFilteredPartners(response.data);
+      setCurrentPage(1); // Reset to first page on new filter
+      if (response.data.length === 0) {
+        setError("No matched partners found.");
+      }
     } catch (err) {
-      setError("Error fetching filtered partners");
+      console.error("Error fetching filtered data:", err);
+      setError("Error fetching filtered partners.");
       setFilteredPartners([]);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const [dropdowns, setDropdowns] = useState(
-    fields.map(() => ({ isOpen: false, search: "", selectedOptions: [] }))
-  );
-
-  const dropdownRefs = useRef([]);
-
-  const fetchAllPartners = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:5000/api/partners/list"
-      );
-      setKaramat(response.data);
-    } catch (err) {
-      console.error("Error fetching partners:", err);
-    }
-  };
-
-  const fetchFilteredData = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/partners/filter",
-        formData
-      );
-      setFilteredPartners(response.data);
-    } catch (err) {
-      console.error("Error fetching filtered data:", err);
-      setFilteredPartners([]);
     }
   };
 
@@ -166,8 +176,10 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchFilteredData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
+  // 10. Handle option toggle in dropdowns
   const handleOptionToggle = (index, option) => {
     const updatedOptions = dropdowns[index].selectedOptions.includes(option)
       ? dropdowns[index].selectedOptions.filter((item) => item !== option)
@@ -195,6 +207,7 @@ const Dashboard = () => {
     setIsSelected(anyFieldSelected);
   };
 
+  // 11. Handle search input change in dropdowns
   const handleSearchChange = (index, value) => {
     setDropdowns((prev) =>
       prev.map((dropdown, i) =>
@@ -203,6 +216,7 @@ const Dashboard = () => {
     );
   };
 
+  // 12. Toggle dropdown open/close
   const toggleDropdown = (index) => {
     setDropdowns((prev) =>
       prev.map((dropdown, i) =>
@@ -211,28 +225,17 @@ const Dashboard = () => {
     );
   };
 
+  // 13. Close dropdowns when clicking outside
   const handleClickOutside = (event) => {
     dropdownRefs.current.forEach((dropdown, index) => {
       if (dropdown && !dropdown.contains(event.target)) {
         setDropdowns((prev) =>
-          prev.map((dropdown, i) =>
-            i === index ? { ...dropdown, isOpen: false } : dropdown
+          prev.map((dropdownState, i) =>
+            i === index ? { ...dropdownState, isOpen: false } : dropdownState
           )
         );
       }
     });
-  };
-
-  const fetchPartnerDetails = async (id) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/api/partners/${id}`
-      );
-      setSelectedPartner(response.data);
-      setIsModalOpen(true);
-    } catch (error) {
-      console.error("Error fetching partner details:", error);
-    }
   };
 
   useEffect(() => {
@@ -242,15 +245,34 @@ const Dashboard = () => {
     };
   }, []);
 
+  // 14. Fetch partner details for Modal
+  const fetchPartnerDetails = async (id) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/partners/${id}`
+      );
+      setSelectedPartner(response.data);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching partner details:", error);
+      setError("Error fetching partner details.");
+    }
+  };
+
+  // 15. Close Modal
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedPartner(null);
   };
 
-  if (loading) return <div className="text-center mt-10">Loading...</div>;
-  if (error)
-    return <div className="text-center mt-10 text-red-500">{error}</div>;
+  // 16. Handle form submission for filters
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+    // Filters are already handled via useEffect on formData
+    // If you want to trigger fetchFilteredData here, ensure it's handled correctly
+  };
 
+  // 17. Handle reset filters
   const handleReset = () => {
     // Reset form data for specific fields
     const clearedFormData = { ...formData };
@@ -262,8 +284,19 @@ const Dashboard = () => {
 
     setFormData(clearedFormData);
     setDropdowns([...dropdowns]); // Update dropdown states
-    setIsSelected(false); // Optional: Reset the `isSelected` state
+    setFilteredPartners([]); // Clear filtered data
+    setError(null); // Clear any existing errors
+    setIsSelected(false); // Reset the `isSelected` state
+    setCurrentPage(1); // Reset to first page
   };
+
+  // 18. Render Loading and Error States
+  if (loading)
+    return <div className="text-center mt-10">Loading...</div>;
+  if (error)
+    return (
+      <div className="text-center mt-10 text-red-500">{error}</div>
+    );
 
   return (
     <>
@@ -308,7 +341,7 @@ const Dashboard = () => {
 
                   {/* Dropdown Menu */}
                   <div
-                    className={` bg-white border border-gray-300 rounded-lg shadow-lg transition-all duration-300 ease-in-out ${
+                    className={` bg-white mt-2 border border-gray-300 rounded-lg shadow-lg transition-all duration-300 ease-in-out ${
                       dropdown.isOpen
                         ? "max-h-60 opacity-100 overflow-y-auto"
                         : "max-h-0 opacity-0 overflow-hidden"
@@ -331,7 +364,9 @@ const Dashboard = () => {
                         filteredOptions.map((option) => (
                           <li
                             key={option}
-                            onClick={() => handleOptionToggle(index, option)}
+                            onClick={() =>
+                              handleOptionToggle(index, option)
+                            }
                             className="px-4 py-1 flex items-center hover:bg-blue-50 cursor-pointer"
                           >
                             <input
@@ -370,10 +405,10 @@ const Dashboard = () => {
 
         {/* Table Section */}
         <div className="w-full lg:w-9/12 mx-4 mt-3">
-          {currentEntries?.length > 0 && karamat?.length > 0 ? (
+          {currentEntries.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="sticky top-0 -z-10  bg-gray-500">
+                <thead className="sticky top-0 bg-gray-500">
                   <tr>
                     <th className="px-6 py-3 text-left text-md font-semibold text-white uppercase tracking-wider">
                       Name
@@ -390,8 +425,8 @@ const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {currentEntries?.map((partner) => (
-                    <tr key={partner._id}>
+                  {currentEntries.map((partner) => (
+                    <tr key={partner._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
                         {partner.name}
                       </td>
@@ -414,75 +449,31 @@ const Dashboard = () => {
                 </tbody>
               </table>
             </div>
-          ) : karamat?.length > 0 &&
-            isSelected &&
-            currentEntries?.length === 0 ? (
+          ) : isFiltering ? (
             <div className="text-center text-gray-500 py-6">
               No matched data found.
             </div>
           ) : (
-            <div className="overflow-x-auto" style={{ maxHeight: "90%" }}>
-              <table className="min-w-full divide-y divide-gray-200 bg-gray-100">
-                <thead className="sticky top-0 bg-gray-500">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-md font-semibold text-white uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-md font-semibold text-white uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-md font-semibold text-white uppercase tracking-wider">
-                      Contact Number
-                    </th>
-                    <th className="px-6 py-3 text-left text-md font-semibold text-white uppercase tracking-wider">
-                      Detail
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {karamat.length > 0 &&
-                    karamat?.map((partner) => (
-                      <tr key={partner._id}>
-                        <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
-                          {partner.name}
-                        </td>
-                        <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
-                          {partner.email}
-                        </td>
-                        <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
-                          {partner.telephone}
-                        </td>
-                        <td className="px-6 py-4 text-md font-semibold whitespace-nowrap">
-                          <button
-                            className="px-4 py-2 bg-green-200 text-green-800 hover:bg-green-300 hover:text-white inline-flex text-xs leading-5 font-semibold rounded-full  transition-colors duration-200 "
-                            onClick={() => fetchPartnerDetails(partner._id)}
-                          >
-                            View Detail
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
+            <div className="text-center text-gray-500 py-6">
+              No partners available.
             </div>
           )}
 
-          {/* {(filteredPartners.length > entriesPerPage || karamat.length > entriesPerPage) && ( */}
           {/* Pagination */}
-          {filteredPartners.length > entriesPerPage && (
+          {totalPages > 1 && (
             <div className="flex justify-center py-4">
               <button
-                className="px-4 py-2 bg-gray-500 text-white rounded-l-md transition-colors duration-200 hover:bg-gray-600"
+                className="px-4 py-2 bg-gray-500 text-white rounded-l-md transition-colors duration-200 hover:bg-gray-600 disabled:bg-gray-300"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
               >
                 Previous
               </button>
-              <span className="px-4 py-2 text-lg">
-                {currentPage}/{totalPages}
+              <span className="px-4 py-2 text-lg flex items-center">
+                Page {currentPage} of {totalPages}
               </span>
               <button
-                className="px-4 py-2 bg-gray-500 text-white rounded-r-md transition-colors duration-200 hover:bg-gray-600"
+                className="px-4 py-2 bg-gray-500 text-white rounded-r-md transition-colors duration-200 hover:bg-gray-600 disabled:bg-gray-300"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
               >
@@ -493,164 +484,158 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        contentLabel="Partner Details"
-        className="modal-content"
-        overlayClassName="modal-overlay"
-        style={{
-          content: { width: "900px", padding: "20px", borderRadius: "10px" },
-        }}
-      >
-        {selectedPartner ? (
-          <div className="space-y-4">
-            {/* Modal Header */}
-            <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
-              Partner Details
-            </h2>
-
-            {/* Grid Layout for Sections */}
-            <div className="grid grid-cols-3 gap-4">
-              {/* Personal Information */}
-              <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-700 mb-3">
-                  Personal Information
-                </h3>
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-600">
-                    <strong>Name:</strong> {selectedPartner.name}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Email:</strong> {selectedPartner.email}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Address:</strong> {selectedPartner.address}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Contact Number:</strong> {selectedPartner.telephone}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Zip Code:</strong> {selectedPartner.zip_code}
-                  </p>
-                </div>
-              </div>
-
-              {/* Service Provided */}
-              <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-700 mb-3">
-                  Service Provided
-                </h3>
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-600">
-                    <strong>Physical:</strong>{" "}
-                    {selectedPartner.physical
-                      ? Array.isArray(selectedPartner.physical)
-                        ? selectedPartner.physical
-                            .map((status, index) => `(${status})`)
-                            .join(", ")
-                        : `(${selectedPartner.physical})`
-                      : "No data available"}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Mental:</strong>{" "}
-                    {selectedPartner.mental
-                      ? Array.isArray(selectedPartner.mental)
-                        ? selectedPartner.mental
-                            .map((status, index) => `(${status})`)
-                            .join(", ")
-                        : `(${selectedPartner.mental})`
-                      : "No data available"}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Social Determinants of Health:</strong>{" "}
-                    {selectedPartner.social_determinants_of_health
-                      ? Array.isArray(
-                          selectedPartner.social_determinants_of_health
-                        )
-                        ? selectedPartner.social_determinants_of_health
-                            .map((status, index) => `(${status})`)
-                            .join(", ")
-                        : `(${selectedPartner.social_determinants_of_health})`
-                      : "No data available"}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Offer Transportation:</strong>{" "}
-                    {selectedPartner.offers_transportation}
-                  </p>
-                </div>
-              </div>
-
-              {/* Served Information */}
-              <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-700 mb-3">
-                  Served Information
-                </h3>
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-600">
-                    <strong>Age Range(s) Served:</strong>{" "}
-                    {selectedPartner.age_range
-                      ? Array.isArray(selectedPartner.age_range)
-                        ? selectedPartner.age_range
-                            .map((status, index) => `(${status})`)
-                            .join(", ")
-                        : `(${selectedPartner.age_range})`
-                      : "No data available"}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Citizenship Status(es) Served:</strong>{" "}
-                    {selectedPartner.citizenship_status
-                      ? Array.isArray(selectedPartner.citizenship_status)
-                        ? selectedPartner.citizenship_status
-                            .map((status, index) => `(${status})`)
-                            .join(", ")
-                        : `(${selectedPartner.citizenship_status})`
-                      : "No data available"}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Accepted Insurance status(es):</strong>{" "}
-                    {selectedPartner.insurance
-                      ? Array.isArray(selectedPartner.insurance)
-                        ? selectedPartner.insurance
-                            .map((status, index) => `(${status})`)
-                            .join(", ")
-                        : `(${selectedPartner.insurance})`
-                      : "No data available"}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Gender:</strong>{" "}
-                    {selectedPartner.gender
-                      ? Array.isArray(selectedPartner.gender)
-                        ? selectedPartner.gender
-                            .map((status, index) => `(${status})`)
-                            .join(", ")
-                        : `(${selectedPartner.gender})`
-                      : "No data available"}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Emergency Room:</strong>{" "}
-                    {selectedPartner.emergency_room}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Close Button */}
-            <div className="w-full mt-6 flex justify-center">
-              <button
-                onClick={closeModal}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        ) : (
-          <p className="text-center text-gray-600">
-            Loading partner details...
-          </p>
-        )}
-      </Modal>
+      {/* Modal for Partner Details */}
+       <Modal
+       isOpen={isModalOpen}
+       onRequestClose={closeModal}
+       contentLabel="Partner Details"
+       className="modal-content"
+       overlayClassName="modal-overlay"
+       style={{ content: { width: "900px", padding: "20px", borderRadius: "10px" } }}
+     >
+       {selectedPartner ? (
+         <div className="space-y-4">
+           {/* Modal Header */}
+           <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
+             Partner Details
+           </h2>
+     
+           {/* Grid Layout for Sections */}
+           <div className="grid grid-cols-3 gap-4">
+             {/* Personal Information */}
+             <div className="bg-gray-50 p-4 rounded-lg shadow-md shadow-slate-400 group hover:shadow-lg hover:-translate-y-2 transform transition-all duration-300">
+               <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                 Personal Information
+               </h3>
+               <div className="space-y-2">
+                 <p className="text-sm text-gray-600">
+                   <strong>Name:</strong> {selectedPartner.name}
+                 </p>
+                 <p className="text-sm text-gray-600">
+                   <strong>Email:</strong> {selectedPartner.email}
+                 </p>
+                 <p className="text-sm text-gray-600">
+                   <strong>Address:</strong> {selectedPartner.address}
+                 </p>
+                 <p className="text-sm text-gray-600">
+                   <strong>Contact Number:</strong> {selectedPartner.telephone}
+                 </p>
+                 <p className="text-sm text-gray-600">
+                   <strong>Zip Code:</strong> {selectedPartner.zip_code}
+                 </p>
+               </div>
+             </div>
+     
+             {/* Service Provided */}
+             <div className="bg-gray-50 p-4 rounded-lg shadow-md shadow-slate-400 group hover:shadow-lg hover:-translate-y-2 transform transition-all duration-300">
+               <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                 Service Provided
+               </h3>
+               <div className="space-y-2">
+                 <p className="text-sm text-gray-600">
+                   <strong>Physical:</strong>{" "}
+                   {selectedPartner.physical
+                     ? Array.isArray(selectedPartner.physical)
+                       ? selectedPartner.physical
+                           .map((status, index) => `(${status})`)
+                           .join(", ")
+                       : `(${selectedPartner.physical})`
+                     : "No data available"}
+                 </p>
+                 <p className="text-sm text-gray-600">
+                   <strong>Mental:</strong>{" "}
+                   {selectedPartner.mental
+                     ? Array.isArray(selectedPartner.mental)
+                       ? selectedPartner.mental
+                           .map((status, index) => `(${status})`)
+                           .join(", ")
+                       : `(${selectedPartner.mental})`
+                     : "No data available"}
+                 </p>
+                 <p className="text-sm text-gray-600">
+                   <strong>Social Determinants of Health:</strong>{" "}
+                   {selectedPartner.social_determinants_of_health
+                     ? Array.isArray(selectedPartner.social_determinants_of_health)
+                       ? selectedPartner.social_determinants_of_health
+                           .map((status, index) => `(${status})`)
+                           .join(", ")
+                       : `(${selectedPartner.social_determinants_of_health})`
+                     : "No data available"}
+                 </p>
+                 <p className="text-sm text-gray-600">
+                   <strong>Offer Transportation:</strong>{" "}
+                   {selectedPartner.offers_transportation}
+                 </p>
+               </div>
+             </div>
+     
+             {/* Served Information */}
+             <div className="bg-gray-50 p-4 rounded-lg shadow-md shadow-slate-400 group hover:shadow-lg hover:-translate-y-2 transform transition-all duration-300">
+               <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                 Served Information
+               </h3>
+               <div className="space-y-2">
+                 <p className="text-sm text-gray-600">
+                   <strong>Age Range(s) Served:</strong>{" "}
+                   {selectedPartner.age_range
+                     ? Array.isArray(selectedPartner.age_range)
+                       ? selectedPartner.age_range
+                           .map((status, index) => `(${status})`)
+                           .join(", ")
+                       : `(${selectedPartner.age_range})`
+                     : "No data available"}
+                 </p>
+                 <p className="text-sm text-gray-600">
+                   <strong>Citizenship Status(es) Served:</strong>{" "}
+                   {selectedPartner.citizenship_status
+                     ? Array.isArray(selectedPartner.citizenship_status)
+                       ? selectedPartner.citizenship_status
+                           .map((status, index) => `(${status})`)
+                           .join(", ")
+                       : `(${selectedPartner.citizenship_status})`
+                     : "No data available"}
+                 </p>
+                 <p className="text-sm text-gray-600">
+                   <strong>Accepted Insurance status(es):</strong>{" "}
+                   {selectedPartner.insurance
+                     ? Array.isArray(selectedPartner.insurance)
+                       ? selectedPartner.insurance
+                           .map((status, index) => `(${status})`)
+                           .join(", ")
+                       : `(${selectedPartner.insurance})`
+                     : "No data available"}
+                 </p>
+                 <p className="text-sm text-gray-600">
+                   <strong>Gender:</strong>{" "}
+                   {selectedPartner.gender
+                     ? Array.isArray(selectedPartner.gender)
+                       ? selectedPartner.gender
+                           .map((status, index) => `(${status})`)
+                           .join(", ")
+                       : `(${selectedPartner.gender})`
+                     : "No data available"}
+                 </p>
+                 <p className="text-sm text-gray-600">
+                   <strong>Emergency Room:</strong> {selectedPartner.emergency_room}
+                 </p>
+               </div>
+             </div>
+           </div>
+     
+           {/* Close Button */}
+           <div className="w-full mt-6 flex justify-center">
+             <button
+               onClick={closeModal}
+               className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200"
+             >
+               Close
+             </button>
+           </div>
+         </div>
+       ) : (
+         <p className="text-center text-gray-600">Loading partner details...</p>
+       )}
+     </Modal>
     </>
   );
 };

@@ -17,7 +17,7 @@ function Partner() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const entriesPerPage = 7;
+  const entriesPerPage = 6;
 
   // Fetch all partners
   const fetchAllPartners = () => {
@@ -184,7 +184,7 @@ function Partner() {
       </div>
 
       {/* Partners Table */}
-      <div className="w-10/12 mx-auto mt-6">
+      <div className="w-10/12 mx-auto mt-6 shadow-md shadow-slate-600 rounded-md">
         <table className="w-full divide-y divide-gray-200 bg-gray- p-5">
           <thead>
             <tr>
@@ -288,7 +288,7 @@ function Partner() {
       {/* Grid Layout for Sections */}
       <div className="grid grid-cols-3 gap-4">
         {/* Personal Information */}
-        <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+        <div className="bg-gray-50 p-4 rounded-lg shadow-md shadow-slate-400 group hover:shadow-lg hover:-translate-y-2 transform transition-all duration-300">
           <h3 className="text-lg font-semibold text-gray-700 mb-3">
             Personal Information
           </h3>
@@ -312,7 +312,7 @@ function Partner() {
         </div>
 
         {/* Service Provided */}
-        <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+        <div className="bg-gray-50 p-4 rounded-lg shadow-md shadow-slate-400 group hover:shadow-lg hover:-translate-y-2 transform transition-all duration-300">
           <h3 className="text-lg font-semibold text-gray-700 mb-3">
             Service Provided
           </h3>
@@ -355,7 +355,7 @@ function Partner() {
         </div>
 
         {/* Served Information */}
-        <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+        <div className="bg-gray-50 p-4 rounded-lg shadow-md shadow-slate-400 group hover:shadow-lg hover:-translate-y-2 transform transition-all duration-300">
           <h3 className="text-lg font-semibold text-gray-700 mb-3">
             Served Information
           </h3>
