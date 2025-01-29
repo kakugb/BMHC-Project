@@ -15,6 +15,7 @@ import AddUserPartner from './pages/users/AddUserPartner';
 import CheckAuth from './components/CheckAuth';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AddUsers from './pages/admin/AddUsers';
 const App = () => {
   const [isLogged, setIsLogged] = useState(false);
   const [role, setRole] = useState("");
@@ -58,6 +59,7 @@ const App = () => {
         <Route path="partner" element={<Partner />} />
         <Route path="addPartner" element={<AddPartner />} />
         <Route path="updatePartner/:id" element={<UpdatePartner />} />
+        <Route path="add-users" element={<AddUsers />} />
       </Route>
 
       

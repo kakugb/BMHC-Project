@@ -56,7 +56,7 @@ const Navbar = ({ role, user }) => {
                   Home
                 </Link>
                
-                <Link
+                <Link 
                   to="/admin/partner"
                   className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-yellow-500 md:p-0 dark:text-white md:dark:hover:text-yellow-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                 >
@@ -67,6 +67,12 @@ const Navbar = ({ role, user }) => {
                   className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-yellow-500 md:p-0 dark:text-white md:dark:hover:text-yellow-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                 >
                   Add Partner
+                </Link>
+                <Link
+                  to="/admin/add-users"
+                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-yellow-500 md:p-0 dark:text-white md:dark:hover:text-yellow-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                >
+                  Add User
                 </Link>
               </>
             )}
@@ -107,10 +113,10 @@ const Navbar = ({ role, user }) => {
               </button>
 
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-md">
+                <div className="absolute right-0 w-48 bg-white border border-gray-300 rounded-lg shadow-md">
                   <button
                     onClick={handleLogout}
-                    className="block w-full py-2 text-gray-700 hover:bg-gray-200 rounded-b-lg z-10"
+                    className="block w-full py-2 text-gray-700 hover:bg-gray-200 rounded-b-lg z-70"
                   >
                     Logout
                   </button>

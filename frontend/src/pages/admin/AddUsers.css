@@ -1,0 +1,11 @@
+.custom-table .ant-table-thead > tr > th {
+    background-color: #6b7280; /* bg-gray-500 */
+    color: white;
+    text-align: center;
+  }
+  
+  .custom-table .ant-table-tbody > tr  {
+   
+    text-align: center;
+  }
+ 

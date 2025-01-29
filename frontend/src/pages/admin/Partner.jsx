@@ -3,9 +3,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Modal from "react-modal";
 import "../../../src/App.css";
-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 Modal.setAppElement("#root");
 
 function Partner() {
@@ -15,10 +15,11 @@ function Partner() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const entriesPerPage = 7;
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const entriesPerPage = 7;
+
+  // Fetch all partners
   const fetchAllPartners = () => {
     axios
       .get("http://localhost:5000/api/partners/list")
@@ -32,6 +33,7 @@ function Partner() {
     fetchAllPartners();
   }, []);
 
+  // Fetch partner details for modal
   const fetchPartnerDetails = async (id) => {
     try {
       const response = await axios.get(
@@ -44,11 +46,49 @@ function Partner() {
     }
   };
 
+  // Close modal
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedPartner(null);
   };
 
+  // Handle search input change
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  // Debounced search with API call
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchQuery.trim() === "") {
+        fetchAllPartners();
+      } else {
+        fetchPartnersByName(searchQuery);
+      }
+    }, 500); // Debounce delay
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
+
+  // Fetch partners by name from API
+  const fetchPartnersByName = async (query) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/partners/filterByName",
+        { name: query }
+      );
+      setPartners(response.data);
+    } catch (err) {
+      setError("Error fetching partners");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter partners locally
   const filteredPartners = partners.filter((partner) => {
     return (
       (partner.name ? partner.name.toLowerCase() : "").includes(
@@ -66,8 +106,8 @@ function Partner() {
     );
   });
 
+  // Pagination logic
   const totalPages = Math.ceil(filteredPartners.length / entriesPerPage);
-
   const currentEntries = filteredPartners.slice(
     (currentPage - 1) * entriesPerPage,
     currentPage * entriesPerPage
@@ -79,6 +119,7 @@ function Partner() {
     }
   };
 
+  // Delete a partner
   const DeleteRecord = (id) => {
     const token = localStorage.getItem("token");
 
@@ -90,8 +131,8 @@ function Partner() {
     axios
       .delete(`http://localhost:5000/api/partners/delete/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then(() => {
         fetchAllPartners();
@@ -103,44 +144,17 @@ function Partner() {
       });
   };
 
+  // Navigate to update partner page
   const updateUser = (id) => {
     navigate(`/admin/UpdatePartner/${id}`);
   };
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const fetchPartnersByName = async (query) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/partners/filterByName",
-        { name: query }
-      );
-      setPartners(response.data);
-    } catch (err) {
-      setError("Error fetching partners");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (searchQuery.trim() === "") {
-      fetchAllPartners();
-    } else {
-      fetchPartnersByName(searchQuery);
-    }
-    setCurrentPage(1); // Reset to the first page whenever search query changes
-  }, [searchQuery]);
-
   return (
     <>
+      {/* Search Bar */}
       <div className="w-full flex justify-end">
         <div className="w-full max-w-sm min-w-[200px] mt-4 mr-10">
-          <div className="relative ">
+          <div className="relative">
             <input
               className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-400 rounded-md pl-3 pr-28 py-3 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
               placeholder="Search partners..."
@@ -169,7 +183,8 @@ function Partner() {
         </div>
       </div>
 
-      <div className="w-10/12 mx-auto mt-6 ">
+      {/* Partners Table */}
+      <div className="w-10/12 mx-auto mt-6">
         <table className="w-full divide-y divide-gray-200 bg-gray- p-5">
           <thead>
             <tr>
@@ -205,7 +220,7 @@ function Partner() {
                 </td>
                 <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
                   <button
-                    className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                    className="px-4 py-2 bg-green-200 text-green-800 hover:bg-green-300 hover:text-white inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
                     onClick={() => fetchPartnerDetails(partner._id)}
                   >
                     View Detail
@@ -230,205 +245,182 @@ function Partner() {
           </tbody>
         </table>
 
+        {/* Pagination */}
         {filteredPartners.length > entriesPerPage && (
-  <div className="flex justify-center py-4">
-    <button
-      className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
-      onClick={() => handlePageChange(currentPage - 1)}
-      disabled={currentPage === 1}
-    >
-      Previous
-    </button>
-
-    {/* Displaying the current page number */}
-    <span className="px-4 py-2 text-lg font-semibold text-gray-800">
-      {currentPage} of {totalPages}
-    </span>
-
-    <button
-      className="px-4 py-2 bg-gray-500 text-white rounded-r-md"
-      onClick={() => handlePageChange(currentPage + 1)}
-      disabled={currentPage === totalPages}
-    >
-      Next
-    </button>
-  </div>
-)}
-
+          <div className="flex justify-center py-4">
+            <button
+              className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2 text-lg font-semibold text-gray-800">
+              {currentPage} of {totalPages}
+            </span>
+            <button
+              className="px-4 py-2 bg-gray-500 text-white rounded-r-md"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
+      {/* Partner Details Modal */}
       <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        contentLabel="Partner Details"
-        className="modal-content"
-        overlayClassName="modal-overlay "
-        style={{ content: { width: "900px" } }}
-      >
-        {selectedPartner ? (
-          <div>
-            <h2 className="text-xl font-bold mb-2 text-center">
-              Partner Details
-            </h2>
-            <div className="w-full grid grid-cols-3 gap-4">
-              <h1 className="text-xl font-bold">Personal information</h1>
-              <h1 className="text-xl font-bold">Service Provided</h1>
-              <h1 className="text-xl font-bold">Served Information</h1>
-            </div>
-            <div className="w-full grid grid-cols-3 gap-4 mt-5">
-              <p className="font-semibold mt-2">
-                <strong>Name</strong>
-                <h1 className="ml-5"> {selectedPartner.name}</h1>
-              </p>
-              <p className="font-semibold mt-2">
-                <strong>Physical</strong>
-                <h1 className="ml-5">
-                  {selectedPartner.physical
-                    ? Array.isArray(selectedPartner.physical)
-                      ? selectedPartner.physical
-                          .map((status, index) => `(${status})`)
-                          .join("   ")
-                      : `(${selectedPartner.physical})`
-                    : "No data available"}
-                </h1>
-              </p>
+  isOpen={isModalOpen}
+  onRequestClose={closeModal}
+  contentLabel="Partner Details"
+  className="modal-content"
+  overlayClassName="modal-overlay"
+  style={{ content: { width: "900px", padding: "20px", borderRadius: "10px" } }}
+>
+  {selectedPartner ? (
+    <div className="space-y-4">
+      {/* Modal Header */}
+      <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
+        Partner Details
+      </h2>
 
-              <p className="font-semibold mt-2">
-                <strong>Age Range(s) Served </strong>{" "}
-                <h1 className="ml-5">
-                  {selectedPartner.age_range
-                    ? Array.isArray(selectedPartner.age_range)
-                      ? selectedPartner.age_range
-                          .map((status, index) => `(${status})`)
-                          .join("   ")
-                      : `(${selectedPartner.age_range})`
-                    : "No data available"}
-                </h1>
-              </p>
-            </div>
-
-            <div className="w-full grid grid-cols-3 gap-4 mt-3">
-              <p className="font-semibold mt-2">
-                <strong>Email Address</strong>{" "}
-                <h1 className="ml-5">{selectedPartner.email}</h1>
-              </p>
-
-              <p className="font-semibold mt-2">
-                <strong>Mental</strong>{" "}
-                <h1 className="ml-5">
-                  {" "}
-                  {selectedPartner.mental
-                    ? Array.isArray(selectedPartner.mental)
-                      ? selectedPartner.mental
-                          .map((status, index) => `(${status})`)
-                          .join("   ")
-                      : `(${selectedPartner.mental})`
-                    : "No data available"}
-                </h1>
-              </p>
-
-              <p className="font-semibold mt-2">
-                <strong>Citizenship Status(es) Served </strong>{" "}
-                <h1 className="ml-5">
-                  {selectedPartner.citizenship_status
-                    ? Array.isArray(selectedPartner.citizenship_status)
-                      ? selectedPartner.citizenship_status
-                          .map((status, index) => `(${status})`)
-                          .join("   ")
-                      : `(${selectedPartner.citizenship_status})`
-                    : "No data available"}
-                </h1>
-              </p>
-            </div>
-
-            <div className="w-full grid grid-cols-3 gap-4 mt-3">
-              <p className="font-semibold mt-2">
-                <strong>Address </strong>{" "}
-                <h1 className="ml-5">{selectedPartner.address}</h1>
-              </p>
-
-              <p className="font-semibold mt-2">
-                <strong>Socal Determinants of Health</strong>
-                <h1 className="ml-5">
-                  {selectedPartner.social_determinants_of_health
-                    ? Array.isArray(
-                        selectedPartner.social_determinants_of_health
-                      )
-                      ? selectedPartner.social_determinants_of_health
-                          .map((status, index) => `(${status})`)
-                          .join("   ")
-                      : `(${selectedPartner.social_determinants_of_health})`
-                    : "No data available"}
-                </h1>
-              </p>
-
-              <p className="font-semibold mt-2">
-                <strong>Accepted Insurance status(es)</strong>
-                <h1 className="ml-5">
-                  {" "}
-                  {selectedPartner.insurance
-                    ? Array.isArray(selectedPartner.insurance)
-                      ? selectedPartner.insurance
-                          .map((status, index) => `(${status})`)
-                          .join("   ")
-                      : `(${selectedPartner.insurance})`
-                    : "No data available"}
-                </h1>{" "}
-              </p>
-            </div>
-
-            <div className="w-full grid grid-cols-3 gap-4 mt-3">
-              <p className="font-semibold mt-2">
-                <strong>Contact Number</strong>
-                <h1 className="ml-5"> {selectedPartner.telephone}</h1>
-              </p>
-
-              <p className="font-semibold mt-2">
-                <strong>Offer Transportation</strong>
-                <h1 className="ml-5">
-                  {" "}
-                  {selectedPartner.offers_transportation}
-                </h1>
-              </p>
-
-              <p className="font-semibold mt-2">
-                <strong>Gender </strong>{" "}
-                <h1 className="ml-5">
-                  {selectedPartner.gender
-                    ? Array.isArray(selectedPartner.gender)
-                      ? selectedPartner.gender
-                          .map((status, index) => `(${status})`)
-                          .join("   ")
-                      : `(${selectedPartner.gender})`
-                    : "No data available"}
-                </h1>
-              </p>
-            </div>
-            <div className="w-full grid grid-cols-3 gap-4">
-              <p className="font-semibold mt-2">
-                <strong>Zip Code</strong>{" "}
-                <h1 className="ml-5">{selectedPartner.zip_code}</h1>
-              </p>
-
-              <p className="font-semibold mt-2">
-                <strong>Emergency Room</strong>
-                <h1 className="ml-5"> {selectedPartner.emergency_room}</h1>
-              </p>
-            </div>
-
-            <div className="w-full mt-4">
-            <button
-              onClick={closeModal}
-              className="flex mx-auto mt-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 "
-            >
-              Close
-            </button>
-            </div>
+      {/* Grid Layout for Sections */}
+      <div className="grid grid-cols-3 gap-4">
+        {/* Personal Information */}
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-700 mb-3">
+            Personal Information
+          </h3>
+          <div className="space-y-2">
+            <p className="text-sm text-gray-600">
+              <strong>Name:</strong> {selectedPartner.name}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Email:</strong> {selectedPartner.email}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Address:</strong> {selectedPartner.address}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Contact Number:</strong> {selectedPartner.telephone}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Zip Code:</strong> {selectedPartner.zip_code}
+            </p>
           </div>
-        ) : (
-          <p>Loading partner details...</p>
-        )}
-      </Modal>
+        </div>
+
+        {/* Service Provided */}
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-700 mb-3">
+            Service Provided
+          </h3>
+          <div className="space-y-2">
+            <p className="text-sm text-gray-600">
+              <strong>Physical:</strong>{" "}
+              {selectedPartner.physical
+                ? Array.isArray(selectedPartner.physical)
+                  ? selectedPartner.physical
+                      .map((status, index) => `(${status})`)
+                      .join(", ")
+                  : `(${selectedPartner.physical})`
+                : "No data available"}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Mental:</strong>{" "}
+              {selectedPartner.mental
+                ? Array.isArray(selectedPartner.mental)
+                  ? selectedPartner.mental
+                      .map((status, index) => `(${status})`)
+                      .join(", ")
+                  : `(${selectedPartner.mental})`
+                : "No data available"}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Social Determinants of Health:</strong>{" "}
+              {selectedPartner.social_determinants_of_health
+                ? Array.isArray(selectedPartner.social_determinants_of_health)
+                  ? selectedPartner.social_determinants_of_health
+                      .map((status, index) => `(${status})`)
+                      .join(", ")
+                  : `(${selectedPartner.social_determinants_of_health})`
+                : "No data available"}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Offer Transportation:</strong>{" "}
+              {selectedPartner.offers_transportation}
+            </p>
+          </div>
+        </div>
+
+        {/* Served Information */}
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-700 mb-3">
+            Served Information
+          </h3>
+          <div className="space-y-2">
+            <p className="text-sm text-gray-600">
+              <strong>Age Range(s) Served:</strong>{" "}
+              {selectedPartner.age_range
+                ? Array.isArray(selectedPartner.age_range)
+                  ? selectedPartner.age_range
+                      .map((status, index) => `(${status})`)
+                      .join(", ")
+                  : `(${selectedPartner.age_range})`
+                : "No data available"}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Citizenship Status(es) Served:</strong>{" "}
+              {selectedPartner.citizenship_status
+                ? Array.isArray(selectedPartner.citizenship_status)
+                  ? selectedPartner.citizenship_status
+                      .map((status, index) => `(${status})`)
+                      .join(", ")
+                  : `(${selectedPartner.citizenship_status})`
+                : "No data available"}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Accepted Insurance status(es):</strong>{" "}
+              {selectedPartner.insurance
+                ? Array.isArray(selectedPartner.insurance)
+                  ? selectedPartner.insurance
+                      .map((status, index) => `(${status})`)
+                      .join(", ")
+                  : `(${selectedPartner.insurance})`
+                : "No data available"}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Gender:</strong>{" "}
+              {selectedPartner.gender
+                ? Array.isArray(selectedPartner.gender)
+                  ? selectedPartner.gender
+                      .map((status, index) => `(${status})`)
+                      .join(", ")
+                  : `(${selectedPartner.gender})`
+                : "No data available"}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Emergency Room:</strong> {selectedPartner.emergency_room}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Close Button */}
+      <div className="w-full mt-6 flex justify-center">
+        <button
+          onClick={closeModal}
+          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  ) : (
+    <p className="text-center text-gray-600">Loading partner details...</p>
+  )}
+</Modal>
 
       <ToastContainer />
     </>
