@@ -107,7 +107,7 @@ function AddUserPartner() {
       toast.success("Partner added successfully!");
 
       setTimeout(() => {
-        navigate("/user/dashboard");
+        navigate("/user/managepatner");
       }, 2000);
     } catch (error) {
       console.error(error);
