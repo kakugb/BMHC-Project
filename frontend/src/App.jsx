@@ -16,6 +16,8 @@ import CheckAuth from './components/CheckAuth';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AddUsers from './pages/admin/AddUsers';
+import Home from './pages/users/Home';
+import UpdatePartners from './pages/users/UpdatePartners';
 const App = () => {
   const [isLogged, setIsLogged] = useState(false);
   const [role, setRole] = useState("");
@@ -68,8 +70,11 @@ const App = () => {
           <UserLayout />
         </CheckAuth>
       }>
-        <Route path="dashboard" element={<UserDashboard />} />
+         <Route path="dashboard" element={<Home/>}/>
+        <Route path="managepatner" element={<UserDashboard />} />
         <Route path="addUserPartner" element={<AddUserPartner />} />
+       
+        <Route path="updatePartners/:id" element={<UpdatePartners />} />
       </Route>
 
     
