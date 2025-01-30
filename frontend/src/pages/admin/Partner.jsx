@@ -187,7 +187,7 @@ function Partner() {
       
       {/* Partners Table */}
       <div>
-      <div className="overflow-hidden  w-10/12 mx-auto mt-6 shadow-md shadow-slate-600 rounded-xl  ">
+      <div className="overflow-x-auto  w-10/12 mx-auto mt-6 shadow-md shadow-slate-600 rounded-xl  ">
         <table className="w-full divide-y divide-gray-200  p-5 " >
           <thead>
             <tr>
