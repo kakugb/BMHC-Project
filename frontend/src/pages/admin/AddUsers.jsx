@@ -50,6 +50,7 @@ function AddUsers() {
     setFormData({ ...formData, [name]: value });
   };
 
+  
   // Show Edit Modal
   const showEditModal = async (user) => {
     setCurrentUser(user);
@@ -91,6 +92,7 @@ function AddUsers() {
     });
   };
 
+   
   // Handle Update User
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -110,6 +112,7 @@ function AddUsers() {
     }
   };
 
+ 
   // Handle Add User
   const handleAddUser = async (e) => {
     e.preventDefault();
@@ -120,7 +123,7 @@ function AddUsers() {
       closeModal();
     } catch (error) {
       showNotification("error", "Error adding user");
-    }
+    } 
   };
 
   // Handle Delete User
