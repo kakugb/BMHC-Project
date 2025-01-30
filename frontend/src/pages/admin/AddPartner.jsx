@@ -116,8 +116,8 @@ function AddPartner() {
   };
 
   return (
-    <div className="w-full mx-auto px-4 pt-8 bg-gray-50">
-      <div className="max-w-10/12 mx-auto  bg-white shadow-lg shadow-slate-600 rounded-lg p-6 ">
+    <div className="w-full mx-auto px-4 pb-10 bg-gray-50">
+      <div className="max-w-10/12 mx-auto mt-8 bg-white shadow-lg shadow-slate-600 rounded-lg p-6 ">
         <h1 className="text-center font-extrabold text-5xl text-gray-800 mb-20">
           Add Partner
         </h1>
