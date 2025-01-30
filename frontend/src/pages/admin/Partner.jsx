@@ -183,9 +183,11 @@ function Partner() {
         </div>
       </div>
 
+   
+      
       {/* Partners Table */}
-      <div className="w-10/12 mx-auto mt-6 shadow-md shadow-slate-600 rounded-md">
-        <table className="w-full divide-y divide-gray-200 bg-gray- p-5">
+      <div className="overflow-hidden  w-10/12 mx-auto mt-6 rounded-xl shadow-md ">
+        <table className="w-full divide-y divide-gray-200  p-5 shadow-md shadow-slate-400" >
           <thead>
             <tr>
               <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
@@ -249,17 +251,17 @@ function Partner() {
         {filteredPartners.length > entriesPerPage && (
           <div className="flex justify-center py-4">
             <button
-              className="px-4 py-2 bg-gray-500 text-white rounded-l-md"
+              className="px-4 py-2 bg-yellow-500 hover:bg-yellow-400 text-white rounded-l-md"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
             >
-              Previous
+              Prev
             </button>
             <span className="px-4 py-2 text-lg font-semibold text-gray-800">
               {currentPage} of {totalPages}
             </span>
             <button
-              className="px-4 py-2 bg-gray-500 text-white rounded-r-md"
+              className="px-4 py-2 bg-yellow-500 hover:bg-yellow-400 text-white rounded-r-md"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
             >

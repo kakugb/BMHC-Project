@@ -116,9 +116,9 @@ function AddPartner() {
   };
 
   return (
-    <div className="w-full mt-6 mx-auto px-4">
-      <div className="max-w-10/12 mx-auto bg-white shadow-lg shadow-slate-600 rounded-lg p-6">
-        <h1 className="text-center font-extrabold text-5xl text-gray-800 mb-10">
+    <div className="w-full mt-6  mx-auto px-4 pb-10">
+      <div className="max-w-10/12 mx-auto bg-white shadow-lg shadow-slate-600 rounded-lg p-6 ">
+        <h1 className="text-center font-extrabold text-5xl text-gray-800 mb-20">
           Add Partner
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 mt-4">
@@ -133,7 +133,7 @@ function AddPartner() {
           </div>
         </div>
         <form onSubmit={handleSubmit} ref={dropdownRef}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
             {/* Name Field */}
             <div>
               <label
@@ -159,7 +159,7 @@ function AddPartner() {
               <label className="block text-md font-semibold text-gray-700 mb-2">
                 Physical
               </label>
-              <div className="relative">
+              <div>
                 <button
                   type="button"
                   onClick={() => toggleDropdown("physical")}
@@ -188,7 +188,7 @@ function AddPartner() {
                   </svg>
                 </button>
                 {openDropdown === "physical" && (
-                  <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
+                  <div className="mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
                     {[
                       "Physical Care",
                       "Health Screenings",
@@ -222,7 +222,7 @@ function AddPartner() {
               >
                 Age Range(s) Served
               </label>
-              <div className="relative">
+              <div>
                 <button
                   type="button"
                   onClick={() => toggleDropdown("age_range")}
@@ -251,7 +251,7 @@ function AddPartner() {
                   </svg>
                 </button>
                 {openDropdown === "age_range" && (
-                  <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
+                  <div className="mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
                     {[
                       "Minors (under 18)",
                       "Adults (18-64)",
@@ -303,7 +303,7 @@ function AddPartner() {
               <label className="block text-md font-semibold text-gray-700 mb-2">
                 Mental
               </label>
-              <div className="relative">
+              <div>
                 <button
                   type="button"
                   onClick={() => toggleDropdown("mental")}
@@ -332,7 +332,7 @@ function AddPartner() {
                   </svg>
                 </button>
                 {openDropdown === "mental" && (
-                  <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
+                  <div className="mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
                     {[
                       "Counseling",
                       "Nutrition Education",
@@ -372,7 +372,7 @@ function AddPartner() {
               >
                 Citizenship Status(es) Served
               </label>
-              <div className="relative">
+              <div>
                 <button
                   type="button"
                   onClick={() => toggleDropdown("citizenship_status")}
@@ -403,7 +403,7 @@ function AddPartner() {
                   </svg>
                 </button>
                 {openDropdown === "citizenship_status" && (
-                  <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
+                  <div className="mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
                     {[
                       "Citizen",
                       "Resident",
@@ -459,7 +459,7 @@ function AddPartner() {
               >
                 Social Determinants of Health
               </label>
-              <div className="relative">
+              <div>
                 <button
                   type="button"
                   onClick={() =>
@@ -492,7 +492,7 @@ function AddPartner() {
                   </svg>
                 </button>
                 {openDropdown === "social_determinants_of_health" && (
-                  <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
+                  <div className="mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
                     {[
                       "Food",
                       "Diversion",
@@ -534,7 +534,7 @@ function AddPartner() {
               <label className="block text-md font-semibold text-gray-700 mb-2">
                 Accepted Insurance status(es)
               </label>
-              <div className="relative">
+              <div>
                 <button
                   type="button"
                   onClick={() => toggleDropdown("insurance")}
@@ -563,7 +563,7 @@ function AddPartner() {
                   </svg>
                 </button>
                 {openDropdown === "insurance" && (
-                  <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
+                  <div className="mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
                     {[
                       "Accepts private insurance",
                       "Accepts Medicare",
@@ -616,7 +616,7 @@ function AddPartner() {
               <label className="block text-md font-semibold text-gray-700 mb-2">
                 Offer Transportation
               </label>
-              <div className="relative">
+              <div>
                 <button
                   type="button"
                   onClick={() => toggleDropdown("offers_transportation")}
@@ -647,7 +647,7 @@ function AddPartner() {
                   </svg>
                 </button>
                 {openDropdown === "offers_transportation" && (
-                  <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                  <div className="mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                     {["Yes", "No"].map((option) => (
                       <label
                         key={option}
@@ -678,7 +678,7 @@ function AddPartner() {
               >
                 Gender
               </label>
-              <div className="relative">
+              <div>
                 <button
                   type="button"
                   onClick={() => toggleDropdown("gender")}
@@ -707,7 +707,7 @@ function AddPartner() {
                   </svg>
                 </button>
                 {openDropdown === "gender" && (
-                  <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                  <div className="mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                     {["Male", "Female", "Non-binary"].map((option) => (
                       <label
                         key={option}
@@ -758,7 +758,7 @@ function AddPartner() {
               <label className="block text-md font-semibold text-gray-700 mb-2">
                 Emergency Room
               </label>
-              <div className="relative">
+              <div>
                 <button
                   type="button"
                   onClick={() => toggleDropdown("emergency_room")}
@@ -789,7 +789,7 @@ function AddPartner() {
                   </svg>
                 </button>
                 {openDropdown === "emergency_room" && (
-                  <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                  <div className="mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                     {["Yes", "No"].map((option) => (
                       <label
                         key={option}

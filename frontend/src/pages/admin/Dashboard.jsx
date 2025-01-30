@@ -75,7 +75,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isSelected, setIsSelected] = useState(false);
-  const entriesPerPage = 7;
+  const entriesPerPage = 8;
 
   const [formData, setFormData] = useState({
     gender: [],
@@ -323,7 +323,7 @@ const Dashboard = () => {
                   <button
                     type="button"
                     onClick={() => toggleDropdown(index)}
-                    className="w-full bg-white border border-gray-300 py-[6px] px-4 rounded-lg flex justify-between items-center shadow-sm hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                    className="w-full bg-white border border-gray-300 py-[6px] px-4 rounded-lg flex justify-between items-center shadow-sm hover:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200"
                   >
                     <span className="text-gray-700">
                       {dropdown.selectedOptions.length > 0
@@ -404,10 +404,11 @@ const Dashboard = () => {
         </div>
 
         {/* Table Section */}
-        <div className="w-full lg:w-9/12 mx-4 mt-3">
+        <div className="w-full lg:w-9/12 mx-4 mt-3 ">
+        <h1 className="text-4xl  font-bold text-center mt-2 mb-4">Partner Details</h1>
           {currentEntries.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
+            <div className="overflow-x-auto shadow-md shadow-slate-500 rounded-xl">
+              <table className="min-w-full divide-y divide-gray-200 ">
                 <thead className="sticky top-0 bg-gray-500">
                   <tr>
                     <th className="px-6 py-3 text-left text-md font-semibold text-white uppercase tracking-wider">
@@ -463,17 +464,17 @@ const Dashboard = () => {
           {totalPages > 1 && (
             <div className="flex justify-center py-4">
               <button
-                className="px-4 py-2 bg-gray-500 text-white rounded-l-md transition-colors duration-200 hover:bg-gray-600 disabled:bg-gray-300"
+                className="px-4 py-2 bg-yellow-500 text-white font-bold rounded-l-md transition-colors duration-200 hover:bg-yellow-400 disabled:bg-gray-300"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
               >
-                Previous
+                Pre
               </button>
               <span className="px-4 py-2 text-lg flex items-center">
                 Page {currentPage} of {totalPages}
               </span>
               <button
-                className="px-4 py-2 bg-gray-500 text-white rounded-r-md transition-colors duration-200 hover:bg-gray-600 disabled:bg-gray-300"
+                className="px-4 py-2 bg-yellow-500 text-white font-bold rounded-r-md transition-colors duration-200 hover:bg-yellow-400 disabled:bg-gray-300"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
               >
