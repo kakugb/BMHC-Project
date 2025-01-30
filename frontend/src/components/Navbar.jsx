@@ -96,12 +96,21 @@ const Navbar = ({ role, user }) => {
 
               {roles === "user" && (
                 <>
-                  <li>
+                
+                <li>
                     <Link
                       to="/user/dashboard"
                       className="px-3 py-2 rounded-md text-sm font-medium text-gray-900 hover:text-yellow-500 transition-colors duration-300"
                     >
-                      User Home
+                       Home
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/user/managepatner"
+                      className="px-3 py-2 rounded-md text-sm font-medium text-gray-900 hover:text-yellow-500 transition-colors duration-300"
+                    >
+                      Manage Partner
                     </Link>
                   </li>
                   <li>
@@ -299,7 +308,16 @@ const Navbar = ({ role, user }) => {
                     to="/user/dashboard"
                     className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:text-yellow-500 transition-colors duration-300"
                   >
-                    User Home
+                     Home
+                  </Link>
+                </li>
+                
+                <li>
+                  <Link
+                    to="/user/managepatner"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:text-yellow-500 transition-colors duration-300"
+                  >
+                    Manage Partner
                   </Link>
                 </li>
                 <li>
@@ -307,9 +325,10 @@ const Navbar = ({ role, user }) => {
                     to="/user/addUserPartner"
                     className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:text-yellow-500 transition-colors duration-300"
                   >
-                    Add Partner
+                     Add Partner
                   </Link>
                 </li>
+                
               </>
             )}
 
