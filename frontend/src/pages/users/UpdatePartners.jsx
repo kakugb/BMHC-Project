@@ -1,10 +1,15 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import CloseIcon from '@mui/icons-material/Close';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import './AddUsers.css'
-function AddUserPartner() {
+import { useParams, useNavigate } from "react-router-dom";
+
+function UpdatePartners() {
+  const { id } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -20,29 +25,34 @@ function AddUserPartner() {
     mental: [],
     social_determinants_of_health: [],
     offers_transportation: "",
-    emergency_room: "",
+    emergency_room: ""
   });
 
+  // Single state to handle open dropdowns
   const [openDropdown, setOpenDropdown] = useState(null);
-  const dropdownRef = useRef(null);
+  const dropdownRef = React.useRef(null);
 
-  const handleChange = (event) => {
+  const handleChange = event => {
     setFormData({
       ...formData,
-      [event.target.name]: event.target.value,
+      [event.target.name]: event.target.value
     });
+  };
+
+  const toggleDropdown = field => {
+    setOpenDropdown(prev => (prev === field ? null : field));
   };
 
   const handleCheckboxChange = (field, event) => {
     const { value, checked } = event.target;
-    setFormData((prevState) => {
+    setFormData(prevState => {
       const updatedField = prevState[field];
       if (checked) {
         return { ...prevState, [field]: [...updatedField, value] };
       } else {
         return {
           ...prevState,
-          [field]: updatedField.filter((item) => item !== value),
+          [field]: updatedField.filter(item => item !== value)
         };
       }
     });
@@ -50,21 +60,30 @@ function AddUserPartner() {
 
   const handleRadioChange = (field, e) => {
     const { value } = e.target;
-    setFormData((prevData) => ({
+    setFormData(prevData => ({
       ...prevData,
-      [field]: value,
+      [field]: value
     }));
   };
 
-  const toggleDropdown = (field) => {
-    setOpenDropdown((prev) => (prev === field ? null : field));
-  };
+  // Fetch partner details
+  useEffect(() => {
+    if (id) {
+      axios.get(`http://localhost:5000/api/partners/${id}`)
+        .then(response => {
+          setFormData({ ...response.data });
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error('Error fetching partner details:', error);
+          setLoading(false);
+        });
+    }
+  }, [id]);
 
+  // Handle clicks outside the dropdown to close it
   const handleClickOutside = (event) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target)
-    ) {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setOpenDropdown(null);
     }
   };
@@ -76,87 +95,96 @@ function AddUserPartner() {
     };
   }, []);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const isEmptyField = Object.values(formData).some((value) => {
-      if (Array.isArray(value)) {
-        return value.length === 0; 
-      }
-      return value === ""; 
-    });
-
-    if (isEmptyField) {
-      toast.error("Please fill all the required fields before submitting!");
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Ensure token is available for authorization
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Authorization token is missing.');
+      setError('Authorization token is missing.');
+      toast.error("Authorization token is missing.");
       return;
     }
-
-    const token =
-      localStorage.getItem("token") || sessionStorage.getItem("token");
-
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/partners/create",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, 
-          },
-        }
-      );
-      toast.success("Partner added successfully!");
-
+    
+    // Send formData to the backend
+    axios.put(`http://localhost:5000/api/partners/update/${id}`, formData, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      console.log('Partner updated successfully:', response.data);
+      toast.success("Partner Updated successfully!");
       setTimeout(() => {
-        navigate("/user/managepatner");
+        navigate('/user/managepatner'); 
       }, 2000);
-    } catch (error) {
-      console.error(error);
-      toast.error("Error creating partner!");
-    }
+    }) 
+    .catch(error => {
+      console.error('Error updating partner:', error.response ? error.response.data : error.message);
+      setError('Error updating partner');  
+      toast.error("Error updating partner!");
+    });
   };
+  
+  const navigatePartner = () => {
+    navigate('/admin/partner');
+  }
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
   return (
-    <div className="w-full mx-auto px-4 pb-10 bg-gray-50">
-      <div className="max-w-10/12 mx-auto mt-8 bg-white shadow-lg shadow-slate-600 rounded-lg p-6 ">
-        <h1 className="text-center font-extrabold text-5xl text-gray-800 mb-20">
-          Add Partner
+    <div className="w-full mt-4 mx-auto py-10">
+      <div className="w-11/12 mx-auto pb-2 px-4 rounded border-gray-500 shadow-xl shadow-gray-600 bg-gray-200 ">
+        <h1 className="text-center font-bold text-3xl text-black pt-2">
+          Update Partner
         </h1>
-        <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 mt-4">
-          <div className="text-3xl font-bold text-center text-gray-700">
-            Personal Information
+        <div className="w-full flex justify-end">
+          <button 
+            className="text-end text-white text-xl font-semibold bg-red-700 px-2 py-1 rounded-md" 
+            onClick={navigatePartner}
+          >
+            Close
+          </button>
+        </div>
+        <div className="mt-8 grid lg:grid-cols-3 gap-4 ">
+          <div className="text-xl font-bold text-center">
+            <h1>Personal Information</h1>
           </div>
-          <div className="text-3xl font-bold text-center text-gray-700">
-            Service Provided
+          <div className="text-xl font-bold text-center">
+            <h1>Service Provided</h1>
           </div>
-          <div className="text-3xl font-bold text-center text-gray-700">
-            Patient Information
+          <div className="text-xl font-bold text-center">
+            <h1>Patient Information</h1>
           </div>
         </div>
         <form onSubmit={handleSubmit} ref={dropdownRef}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
+          <div className="mt-8 grid lg:grid-cols-3 gap-4">
             {/* Name Field */}
             <div>
               <label
                 htmlFor="name"
-                className="block text-md font-semibold text-gray-700 mb-2"
+                className="text-md text-gray-700 block mb-1 font-medium"
               >
                 Name
               </label>
               <input
                 type="text"
                 name="name"
-                id="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 placeholder="Enter your name"
                 required
               />
             </div>
-
+            
             {/* Physical Dropdown */}
             <div>
-              <label className="block text-md font-semibold text-gray-700 mb-2">
+              <label className="text-md text-gray-700 block mb-1 font-medium">
                 Physical
               </label>
               <div>
@@ -213,12 +241,12 @@ function AddUserPartner() {
                 )}
               </div>
             </div>
-
+            
             {/* Age Range Dropdown */}
             <div>
               <label
                 htmlFor="age_range"
-                className="block text-md font-semibold text-gray-700 mb-2"
+                className="text-md text-gray-700 block mb-1 font-medium"
               >
                 Age Range(s) Served
               </label>
@@ -264,9 +292,7 @@ function AddUserPartner() {
                         <input
                           type="checkbox"
                           value={option}
-                          onChange={(e) =>
-                            handleCheckboxChange("age_range", e)
-                          }
+                          onChange={(e) => handleCheckboxChange("age_range", e)}
                           checked={formData.age_range.includes(option)}
                           className="mr-2"
                         />
@@ -277,30 +303,29 @@ function AddUserPartner() {
                 )}
               </div>
             </div>
-
+            
             {/* Email Field */}
             <div>
               <label
                 htmlFor="email"
-                className="block text-md font-semibold text-gray-700 mb-2"
+                className="text-md text-gray-700 block mb-1 font-medium"
               >
                 Email Address
               </label>
               <input
                 type="email"
                 name="email"
-                id="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 placeholder="yourmail@gmail.com"
                 required
               />
             </div>
-
+            
             {/* Mental Dropdown */}
             <div>
-              <label className="block text-md font-semibold text-gray-700 mb-2">
+              <label className="text-md text-gray-700 block mb-1 font-medium">
                 Mental
               </label>
               <div>
@@ -363,12 +388,12 @@ function AddUserPartner() {
                 )}
               </div>
             </div>
-
+            
             {/* Citizenship Status Dropdown */}
             <div>
               <label
                 htmlFor="citizenship_status"
-                className="block text-md font-semibold text-gray-700 mb-2"
+                className="text-md text-gray-700 block mb-1 font-medium"
               >
                 Citizenship Status(es) Served
               </label>
@@ -386,9 +411,7 @@ function AddUserPartner() {
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className={`h-5 w-5 transition-transform ${
-                      openDropdown === "citizenship_status"
-                        ? "transform rotate-180"
-                        : ""
+                      openDropdown === "citizenship_status" ? "transform rotate-180" : ""
                     }`}
                     fill="none"
                     viewBox="0 0 24 24"
@@ -417,9 +440,7 @@ function AddUserPartner() {
                         <input
                           type="checkbox"
                           value={option}
-                          onChange={(e) =>
-                            handleCheckboxChange("citizenship_status", e)
-                          }
+                          onChange={(e) => handleCheckboxChange("citizenship_status", e)}
                           checked={formData.citizenship_status.includes(option)}
                           className="mr-2"
                         />
@@ -430,41 +451,38 @@ function AddUserPartner() {
                 )}
               </div>
             </div>
-
+            
             {/* Address Field */}
             <div>
-              <label
-                htmlFor="address"
-                className="block text-md font-semibold text-gray-700 mb-2"
+              <label 
+                htmlFor="address" 
+                className="text-md text-gray-700 block mb-1 font-medium"
               >
                 Address
               </label>
               <input
                 type="text"
                 name="address"
-                id="address"
                 value={formData.address}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 placeholder="Enter your Address"
                 required
               />
             </div>
-
+            
             {/* Social Determinants of Health Dropdown */}
             <div>
               <label
                 htmlFor="social_determinants_of_health"
-                className="block text-md font-semibold text-gray-700 mb-2"
+                className="text-md text-gray-700 block mb-1 font-medium"
               >
                 Social Determinants of Health
               </label>
               <div>
                 <button
                   type="button"
-                  onClick={() =>
-                    toggleDropdown("social_determinants_of_health")
-                  }
+                  onClick={() => toggleDropdown("social_determinants_of_health")}
                   className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 flex justify-between items-center"
                 >
                   <span>
@@ -475,9 +493,7 @@ function AddUserPartner() {
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className={`h-5 w-5 transition-transform ${
-                      openDropdown === "social_determinants_of_health"
-                        ? "transform rotate-180"
-                        : ""
+                      openDropdown === "social_determinants_of_health" ? "transform rotate-180" : ""
                     }`}
                     fill="none"
                     viewBox="0 0 24 24"
@@ -510,15 +526,8 @@ function AddUserPartner() {
                         <input
                           type="checkbox"
                           value={option}
-                          onChange={(e) =>
-                            handleCheckboxChange(
-                              "social_determinants_of_health",
-                              e
-                            )
-                          }
-                          checked={formData.social_determinants_of_health.includes(
-                            option
-                          )}
+                          onChange={(e) => handleCheckboxChange("social_determinants_of_health", e)}
+                          checked={formData.social_determinants_of_health.includes(option)}
                           className="mr-2"
                         />
                         {option}
@@ -528,10 +537,10 @@ function AddUserPartner() {
                 )}
               </div>
             </div>
-
+            
             {/* Insurance Dropdown */}
             <div>
-              <label className="block text-md font-semibold text-gray-700 mb-2">
+              <label className="text-md text-gray-700 block mb-1 font-medium">
                 Accepted Insurance status(es)
               </label>
               <div>
@@ -590,30 +599,29 @@ function AddUserPartner() {
                 )}
               </div>
             </div>
-
+            
             {/* Telephone Field */}
             <div>
-              <label
-                htmlFor="telephone"
-                className="block text-md font-semibold text-gray-700 mb-2"
+              <label 
+                htmlFor="telephone" 
+                className="text-md text-gray-700 block mb-1 font-medium"
               >
                 Contact Number
               </label>
               <input
                 type="text"
                 name="telephone"
-                id="telephone"
                 value={formData.telephone}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                 placeholder="Enter phone number"
                 required
               />
             </div>
-
+            
             {/* Offer Transportation Dropdown */}
             <div>
-              <label className="block text-md font-semibold text-gray-700 mb-2">
+              <label className="text-md text-gray-700 block mb-1 font-medium">
                 Offer Transportation
               </label>
               <div>
@@ -630,9 +638,7 @@ function AddUserPartner() {
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className={`h-5 w-5 transition-transform ${
-                      openDropdown === "offers_transportation"
-                        ? "transform rotate-180"
-                        : ""
+                      openDropdown === "offers_transportation" ? "transform rotate-180" : ""
                     }`}
                     fill="none"
                     viewBox="0 0 24 24"
@@ -656,9 +662,7 @@ function AddUserPartner() {
                         <input
                           type="radio"
                           value={option}
-                          onChange={(e) =>
-                            handleRadioChange("offers_transportation", e)
-                          }
+                          onChange={(e) => handleRadioChange("offers_transportation", e)}
                           checked={formData.offers_transportation === option}
                           className="mr-2"
                         />
@@ -669,12 +673,12 @@ function AddUserPartner() {
                 )}
               </div>
             </div>
-
+            
             {/* Gender Dropdown */}
             <div>
               <label
                 htmlFor="gender"
-                className="block text-md font-semibold text-gray-700 mb-2"
+                className="text-md text-gray-700 block mb-1 font-medium"
               >
                 Gender
               </label>
@@ -727,35 +731,34 @@ function AddUserPartner() {
                 )}
               </div>
             </div>
-
+            
             {/* Zip Code Field */}
             <div>
-              <label
-                htmlFor="zip_code"
-                className="block text-md font-semibold text-gray-700 mb-2"
+              <label 
+                htmlFor="zip_code" 
+                className="text-md text-gray-700 block mb-1 font-medium"
               >
                 Zip Code
               </label>
               <input
                 type="text"
                 name="zip_code"
-                id="zip_code"
                 value={formData.zip_code}
-                onChange={(e) => {
+                onChange={e => {
                   const value = e.target.value;
                   if (/^\d*$/.test(value)) {
                     handleChange(e);
                   }
                 }}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                placeholder="Enter Zip code"
+                className="bg-white border rounded py-1 px-3 border-gray-400 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                placeholder="Enter Zip code in Number"
                 required
               />
             </div>
-
+            
             {/* Emergency Room Dropdown */}
             <div>
-              <label className="block text-md font-semibold text-gray-700 mb-2">
+              <label className="text-md text-gray-700 block mb-1 font-medium">
                 Emergency Room
               </label>
               <div>
@@ -772,9 +775,7 @@ function AddUserPartner() {
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className={`h-5 w-5 transition-transform ${
-                      openDropdown === "emergency_room"
-                        ? "transform rotate-180"
-                        : ""
+                      openDropdown === "emergency_room" ? "transform rotate-180" : ""
                     }`}
                     fill="none"
                     viewBox="0 0 24 24"
@@ -798,9 +799,7 @@ function AddUserPartner() {
                         <input
                           type="radio"
                           value={option}
-                          onChange={(e) =>
-                            handleRadioChange("emergency_room", e)
-                          }
+                          onChange={(e) => handleRadioChange("emergency_room", e)}
                           checked={formData.emergency_room === option}
                           className="mr-2"
                         />
@@ -812,14 +811,14 @@ function AddUserPartner() {
               </div>
             </div>
           </div>
-
+          
           {/* Submit Button */}
-          <div className="w-full flex justify-center space-x-4 mt-8">
+          <div className="w-full flex justify-center space-x-4 mt-6">
             <button
               type="submit"
-              className="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-md py-2 px-4 mb-3 bg-blue-500 text-white rounded hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50"
             >
-              Add Partner
+              Update Partner
             </button>
           </div>
         </form>
@@ -830,4 +829,5 @@ function AddUserPartner() {
 }
 
 
-export default AddUserPartner
+
+export default UpdatePartners
