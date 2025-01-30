@@ -1,18 +1,30 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Button, Table, notification, Modal, Form, Input } from "antd";
-import "./AddUsers.css";
+
 function AddUsers() {
   const [users, setUsers] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [form] = Form.useForm();
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const [notification, setNotification] = useState({
+    type: "",
+    message: "",
+  });
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 7;
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
+  // Fetch all users
   const fetchUsers = async () => {
     try {
       const response = await axios.get(
@@ -20,205 +32,356 @@ function AddUsers() {
       );
       setUsers(response.data.users);
     } catch (error) {
-      notification.error({ message: "Error fetching users" });
+      showNotification("error", "Error fetching users");
     }
   };
 
-  const showModal = async (user) => {
+  // Show notification
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+    setTimeout(() => {
+      setNotification({ type: "", message: "" });
+    }, 3000);
+  };
+
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  // Show Edit Modal
+  const showEditModal = async (user) => {
     setCurrentUser(user);
     try {
       const response = await axios.get(
         `http://localhost:5000/api/users/getUser/${user._id}`
       );
       const userDetails = response.data.user;
-      form.setFieldsValue({
+      setFormData({
         username: userDetails.username,
         email: userDetails.email,
         password: "",
       });
-      setIsModalVisible(true);
+      setIsEditModalVisible(true);
     } catch (error) {
-      notification.error({ message: "Error fetching user details" });
+      showNotification("error", "Error fetching user details");
     }
   };
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    setIsAddModalVisible(false);
+  // Show Add Modal
+  const showAddModal = () => {
+    setFormData({
+      username: "",
+      email: "",
+      password: "",
+    });
+    setIsAddModalVisible(true);
   };
 
-  const handleUpdate = async (values) => {
+  // Close Modal
+  const closeModal = () => {
+    setIsEditModalVisible(false);
+    setIsAddModalVisible(false);
+    setCurrentUser(null);
+    setFormData({
+      username: "",
+      email: "",
+      password: "",
+    });
+  };
+
+  // Handle Update User
+  const handleUpdate = async (e) => {
+    e.preventDefault();
     try {
-      if (!values.password) delete values.password;
+      const payload = { ...formData };
+      if (!payload.password) delete payload.password;
+
       await axios.put(
         `http://localhost:5000/api/users/updateUser/${currentUser._id}`,
-        values
+        payload
       );
-      notification.success({ message: "User updated successfully" });
+      showNotification("success", "User updated successfully");
       fetchUsers();
-      form.resetFields();
-      setIsModalVisible(false);
+      closeModal();
     } catch (error) {
-      notification.error({ message: "Error updating user" });
+      showNotification("error", "Error updating user");
     }
   };
 
-  const handleAddUser = async (values) => {
+  // Handle Add User
+  const handleAddUser = async (e) => {
+    e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/users/register", values);
-      notification.success({ message: "User added successfully" });
+      await axios.post("http://localhost:5000/api/users/register", formData);
+      showNotification("success", "User added successfully");
       fetchUsers();
-      setIsAddModalVisible(false);
+      closeModal();
     } catch (error) {
-      notification.error({ message: "Error adding user" });
+      showNotification("error", "Error adding user");
     }
   };
 
+  // Handle Delete User
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/api/users/deleteUser/${id}`);
-      notification.success({ message: "User deleted successfully" });
-      fetchUsers();
-    } catch (error) {
-      notification.error({ message: "Error deleting user" });
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      try {
+        await axios.delete(`http://localhost:5000/api/users/deleteUser/${id}`);
+        showNotification("success", "User deleted successfully");
+        fetchUsers();
+      } catch (error) {
+        showNotification("error", "Error deleting user");
+      }
     }
   };
 
-  const columns = [
-    {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-      render: (text) => <span style={{ fontWeight: "bold" }}>{text}</span>,
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (user) => (
-        <div>
-          <Button
-            type="default"
-            className="bg-blue-700 hover:!bg-blue-500 text-white px-4 py-1 mr-2"
-            onClick={() => showModal(user)}
-          >
-            Edit
-          </Button>
-          <Button
-            type="default"
-            className="bg-red-700 hover:!bg-red-500 text-white px-4 py-1 ml-2"
-            onClick={() => handleDelete(user._id)}
-          >
-            Delete
-          </Button>
-        </div>
-      ),
-    },
-  ];
+  // Pagination Logic
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(users.length / usersPerPage);
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => (prev === 1 ? prev : prev - 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => (prev === totalPages ? prev : prev + 1));
+  };
 
   return (
-    <div className="p-6  min-h-screen">
-      <h1 className="text-4xl font-bold mb-4 text-center">Manage Users</h1>
+    <div className="p-6 min-h-screen bg-white relative">
+      {/* Notification */}
+      {notification.message && (
+        <div
+          className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg ${
+            notification.type === "success"
+              ? "bg-green-500 text-white"
+              : "bg-red-500 text-white"
+          }`}
+        >
+          {notification.message}
+        </div>
+      )}
 
-      <div className="bg-white p-4 shadow-lg rounded-2xl">
-        {/* Right Aligned Add User Button */}
-        <div className="flex justify-end pr-28 mb-4">
-          <Button
-            type="primary"
-            onClick={() => {
-              form.resetFields(); // Ensure empty fields
-              setIsAddModalVisible(true);
-            }}
+      <h1 className="text-center font-extrabold text-5xl text-gray-800 ">Add Users</h1>
+
+      <div className="bg-white p-2 ">
+        {/* Add User Button */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={showAddModal}
+            className="bg-blue-500 text-white px-8 font-bold py-2 rounded hover:bg-blue-600"
           >
             Add User
-          </Button>
+          </button>
         </div>
 
-        {/* Table with full width */}
-        <Table
-          dataSource={users}
-          columns={columns}
-          rowKey="_id"
-          bordered
-          pagination={{ pageSize: 6 }}
-          scroll={{ x: 800 }}
-          className="w-full max-w-screen-xl mx-auto custom-table text-lg font-bold"
-        />
+        {/* Users Table */}
+        <div className="overflow-x-auto rounded-lg shadow-md shadow-slate-500">
+          <table className="w-full mx-auto bg-white">
+            <thead className="bg-gray-500 text-white font-semibold">
+              <tr>
+                <th className="py-4 px-4 border-b text-left">Username</th>
+                <th className="py-4 px-4 border-b text-left">Email</th>
+                <th className="py-4 px-4 border-b text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentUsers.length > 0 ? (
+                currentUsers.map((user) => (
+                  <tr key={user._id} className="hover:bg-gray-50 font-semibold">
+                    <td className="py-2 px-4 border-b font-semibold">
+                      {user.username}
+                    </td>
+                    <td className="py-2 px-4 border-b">{user.email}</td>
+                    <td className="py-2 px-4 border-b">
+                      <button
+                        onClick={() => showEditModal(user)}
+                        className="px-6 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:shadow-outline-blue active:bg-blue-600 transition duration-150 ease-in-out"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(user._id)}
+                        className="ml-2 px-4 py-2 font-semibold text-white bg-red-600 rounded-md hover:bg-red-500 focus:outline-none focus:shadow-outline-red active:bg-red-600 transition duration-150 ease-in-out"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="py-2 px-4 border-b text-center" colSpan="3">
+                    No users found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex justify-center items-center mt-4">
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 mr-2 rounded bg-yellow-500 text-white ${
+              currentPage === 1
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-yellow-400"
+            } transition duration-200`}
+          >
+            Prev
+          </button>
+          <span className="mx-2 text-gray-700">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className={`px-4 py-2 ml-2 rounded bg-yellow-500 text-white ${
+              currentPage === totalPages || totalPages === 0
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-yellow-400"
+            } transition duration-200`}
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       {/* Add User Modal */}
-      <Modal
-        title="Add User"
-        visible={isAddModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-        centered
-      >
-        <Form form={form} layout="vertical" onFinish={handleAddUser}>
-          <Form.Item
-            name="username"
-            label="Username"
-            rules={[{ required: true }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item name="email" label="Email" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            label="Password"
-            rules={[{ required: true }]}
-          >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Add User
-            </Button>
-            <Button onClick={handleCancel} className="ml-2">
-              Cancel
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
+      {isAddModalVisible && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg w-full max-w-md relative">
+            <button
+              onClick={closeModal}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold mb-4">Add User</h2>
+            <form onSubmit={handleAddUser}>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Username</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring"
+                  required
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  Add User
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
-      {/* Update User Modal */}
-      <Modal
-        title="Update User"
-        visible={isModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-        centered
-      >
-        <Form form={form} layout="vertical" onFinish={handleUpdate}>
-          <Form.Item
-            name="username"
-            label="Username"
-            rules={[{ required: true }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item name="email" label="Email" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="password" label="Password">
-            <Input.Password />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Update
-            </Button>
-            <Button onClick={handleCancel} className="ml-2">
-              Cancel
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
+      {/* Edit User Modal */}
+      {isEditModalVisible && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg w-full max-w-md relative">
+            <button
+              onClick={closeModal}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold mb-4">Update User</h2>
+            <form onSubmit={handleUpdate}>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Username</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring"
+                  placeholder="Leave blank to keep unchanged"
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-400"
+                >
+                  Update User
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

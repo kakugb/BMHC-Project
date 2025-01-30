@@ -1,5 +1,5 @@
 .custom-table .ant-table-thead > tr > th {
-    background-color: #6b7280; /* bg-gray-500 */
+    background-color: #6b7280;
     color: white;
     text-align: center;
   }
@@ -9,3 +9,36 @@
     text-align: center;
   }
  
+  .custom-btn {
+    background-color: #1d4ed8; 
+    color: white;
+  }
+  .custom-btn:hover {
+    background-color: #1d4ed8;
+  }
+  
+
+  
+     /* AddUsers.css */
+
+     /* Fade Enter */
+     .fade-enter {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    .fade-enter-active {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 300ms ease-in, transform 300ms ease-in;
+    }
+
+    /* Fade Exit */
+    .fade-exit {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-exit-active {
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 300ms ease-out, transform 300ms ease-out;
+    }

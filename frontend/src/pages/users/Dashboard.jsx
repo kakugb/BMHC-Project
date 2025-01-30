@@ -140,50 +140,51 @@ function Dashbaord() {
           </div>
         </div>
       </div>
-      <div className="overflow-hidden  w-10/12 mx-auto mt-6 rounded-xl  ">
-      <table className="w-full divide-y divide-gray-200  p-5 shadow-md shadow-slate-400" >
-          <thead>
-            <tr>
-              <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
-                Contact Number
-              </th>
-              <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
-                Detail
-              </th>
-            </tr>
-          </thead>
-
-          <tbody className="bg-white divide-y divide-gray-200">
-            {currentEntries.map((partner, ind) => (
-              <tr key={ind} className="hover:bg-gray-50">
-                <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
-                  {partner.name}
-                </td>
-                <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
-                  {partner.email}
-                </td>
-                <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
-                  {partner.telephone}
-                </td>
-                <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
-                  <button
-                    className="px-4 py-2 bg-green-200 text-green-800 hover:bg-green-300 hover:text-white inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
-                    onClick={() => fetchPartnerDetails(partner._id)}
-                  >
-                    View Detail
-                  </button>
-                </td>
+      <div>
+        <div className="overflow-hidden  w-10/12 mx-auto mt-6 shadow-md shadow-slate-600 rounded-xl  ">
+          <table className="w-full divide-y divide-gray-200  p-5 ">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+                  Contact Number
+                </th>
+                <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
+                  Detail
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
 
+            <tbody className="bg-white divide-y divide-gray-200">
+              {currentEntries.map((partner, ind) => (
+                <tr key={ind} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
+                    {partner.name}
+                  </td>
+                  <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
+                    {partner.email}
+                  </td>
+                  <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
+                    {partner.telephone}
+                  </td>
+                  <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
+                    <button
+                      className="px-4 py-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white hover:bg-yellow-400 transition duration-200"
+                      onClick={() => fetchPartnerDetails(partner._id)}
+                    >
+                      View Detail
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         {filteredPartners.length > entriesPerPage && (
           <div className="flex justify-center py-4">
             <button

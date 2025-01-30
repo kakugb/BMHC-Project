@@ -186,8 +186,9 @@ function Partner() {
    
       
       {/* Partners Table */}
-      <div className="overflow-hidden  w-10/12 mx-auto mt-6 rounded-xl shadow-md ">
-        <table className="w-full divide-y divide-gray-200  p-5 shadow-md shadow-slate-400" >
+      <div>
+      <div className="overflow-hidden  w-10/12 mx-auto mt-6 shadow-md shadow-slate-600 rounded-xl  ">
+        <table className="w-full divide-y divide-gray-200  p-5 " >
           <thead>
             <tr>
               <th className="px-6 py-3 text-left text-md font-semibold text-white bg-gray-500 uppercase tracking-wider">
@@ -210,7 +211,7 @@ function Partner() {
 
           <tbody className="bg-white divide-y divide-gray-200">
             {currentEntries.map((partner, ind) => (
-              <tr key={ind}>
+              <tr key={ind} className="hover:bg-gray-50">
                 <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
                   {partner.name}
                 </td>
@@ -222,7 +223,7 @@ function Partner() {
                 </td>
                 <td className="px-6 py-4 texxt-md font-semibold whitespace-nowrap">
                   <button
-                    className="px-4 py-2 bg-green-200 text-green-800 hover:bg-green-300 hover:text-white inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                    className="px-4 py-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white hover:bg-yellow-300 hover:text-black"
                     onClick={() => fetchPartnerDetails(partner._id)}
                   >
                     View Detail
@@ -246,7 +247,7 @@ function Partner() {
             ))}
           </tbody>
         </table>
-
+        </div>
         {/* Pagination */}
         {filteredPartners.length > entriesPerPage && (
           <div className="flex justify-center py-4">

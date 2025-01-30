@@ -80,9 +80,9 @@ function AddPartner() {
     event.preventDefault();
     const isEmptyField = Object.values(formData).some((value) => {
       if (Array.isArray(value)) {
-        return value.length === 0; // Check if arrays are empty
+        return value.length === 0; 
       }
-      return value === ""; // Check if string fields are empty
+      return value === ""; 
     });
 
     if (isEmptyField) {
@@ -100,7 +100,7 @@ function AddPartner() {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include token if required
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
@@ -116,12 +116,12 @@ function AddPartner() {
   };
 
   return (
-    <div className="w-full mt-6  mx-auto px-4 pb-10">
+    <div className="w-full mt-8  mx-auto px-4 pb-10">
       <div className="max-w-10/12 mx-auto bg-white shadow-lg shadow-slate-600 rounded-lg p-6 ">
         <h1 className="text-center font-extrabold text-5xl text-gray-800 mb-20">
           Add Partner
         </h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 mt-4">
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 mt-4">
           <div className="text-3xl font-bold text-center text-gray-700">
             Personal Information
           </div>

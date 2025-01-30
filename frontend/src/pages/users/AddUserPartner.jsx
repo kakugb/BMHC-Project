@@ -121,7 +121,7 @@ function AddUserPartner() {
         <h1 className="text-center font-extrabold text-5xl text-gray-800 mb-20">
           Add Partner
         </h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 mt-4">
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 mt-4">
           <div className="text-3xl font-bold text-center text-gray-700">
             Personal Information
           </div>
