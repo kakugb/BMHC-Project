@@ -146,7 +146,7 @@ function AddUsers() {
           bordered
           pagination={{ pageSize: 6 }}
           scroll={{ x: 800 }}
-          className="w-full max-w-screen-xl mx-auto custom-table"
+          className="w-full max-w-screen-xl mx-auto custom-table text-lg font-bold"
         />
       </div>
 
