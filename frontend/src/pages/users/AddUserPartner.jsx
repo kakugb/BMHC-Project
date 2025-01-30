@@ -3,7 +3,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import './AddUsers.css'
 function AddUserPartner() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -80,9 +80,9 @@ function AddUserPartner() {
     event.preventDefault();
     const isEmptyField = Object.values(formData).some((value) => {
       if (Array.isArray(value)) {
-        return value.length === 0; // Check if arrays are empty
+        return value.length === 0; 
       }
-      return value === ""; // Check if string fields are empty
+      return value === ""; 
     });
 
     if (isEmptyField) {
@@ -100,14 +100,14 @@ function AddUserPartner() {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include token if required
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
       toast.success("Partner added successfully!");
 
       setTimeout(() => {
-        navigate("/user/dashboard");
+        navigate("/admin/dashboard");
       }, 2000);
     } catch (error) {
       console.error(error);
@@ -116,8 +116,8 @@ function AddUserPartner() {
   };
 
   return (
-    <div className="w-full mt-6  mx-auto px-4 pb-10">
-      <div className="max-w-10/12 mx-auto bg-white shadow-lg shadow-slate-600 rounded-lg p-6 ">
+    <div className="w-full mx-auto px-4 pt-8 bg-gray-50">
+      <div className="max-w-10/12 mx-auto  bg-white shadow-lg shadow-slate-600 rounded-lg p-6 ">
         <h1 className="text-center font-extrabold text-5xl text-gray-800 mb-20">
           Add Partner
         </h1>
@@ -828,7 +828,6 @@ function AddUserPartner() {
     </div>
   );
 }
-
 
 
 export default AddUserPartner
