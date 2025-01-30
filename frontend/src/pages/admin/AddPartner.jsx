@@ -3,7 +3,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import './AddUsers.css'
 function AddPartner() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({

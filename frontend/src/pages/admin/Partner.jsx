@@ -250,7 +250,7 @@ function Partner() {
         </div>
         {/* Pagination */}
         {filteredPartners.length > entriesPerPage && (
-          <div className="flex justify-center py-4">
+          <div className="flex justify-center py-4 mt-4">
             <button
               className="px-4 py-2 bg-yellow-500 hover:bg-yellow-400 text-white rounded-l-md"
               onClick={() => handlePageChange(currentPage - 1)}

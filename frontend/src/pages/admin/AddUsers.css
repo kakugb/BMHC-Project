@@ -1,25 +1,4 @@
-.custom-table .ant-table-thead > tr > th {
-    background-color: #6b7280;
-    color: white;
-    text-align: center;
-  }
-  
-  .custom-table .ant-table-tbody > tr  {
-   
-    text-align: center;
-  }
- 
-  .custom-btn {
-    background-color: #1d4ed8; 
-    color: white;
-  }
-  .custom-btn:hover {
-    background-color: #1d4ed8;
-  }
-  
 
-  
-     /* AddUsers.css */
 
      /* Fade Enter */
      .fade-enter {
@@ -42,3 +21,5 @@
       transform: translateY(-10px);
       transition: opacity 300ms ease-out, transform 300ms ease-out;
     }
+
+

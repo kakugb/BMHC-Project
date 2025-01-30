@@ -137,8 +137,8 @@ function UpdatePartner() {
   }
 
   return (
-    <div className="w-full mt-4 mx-auto">
-      <div className="w-11/12 mx-auto pb-2 px-4 rounded border-gray-500 shadow-xl shadow-gray-600 bg-gray-200">
+    <div className="w-full mt-4 mx-auto py-10">
+      <div className="w-11/12 mx-auto pb-2 px-4 rounded border-gray-500 shadow-xl shadow-gray-600 bg-gray-200 ">
         <h1 className="text-center font-bold text-3xl text-black pt-2">
           Update Partner
         </h1>
@@ -150,7 +150,7 @@ function UpdatePartner() {
             Close
           </button>
         </div>
-        <div className="mt-8 grid lg:grid-cols-3 gap-4">
+        <div className="mt-8 grid lg:grid-cols-3 gap-4 ">
           <div className="text-xl font-bold text-center">
             <h1>Personal Information</h1>
           </div>
@@ -816,7 +816,7 @@ function UpdatePartner() {
           <div className="w-full flex justify-center space-x-4 mt-6">
             <button
               type="submit"
-              className="w-md py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50"
+              className="w-md py-2 px-4 mb-3 bg-blue-500 text-white rounded hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50"
             >
               Update Partner
             </button>
